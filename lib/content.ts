@@ -49,7 +49,7 @@ export const projects: Project[] = [
     stack: ["JavaScript", "MediaPipe", "Python", "WebSocket", "pynput"],
     href: "https://github.com/paraschosg/Camera-recognition",
     kind: "solo",
-    year: "2025",
+    year: "2026",
   },
   {
     slug: "image-inspector",
@@ -64,7 +64,7 @@ export const projects: Project[] = [
     stack: ["Python", "Tkinter", "Pillow", "EXIF"],
     href: "https://github.com/paraschosg/image-inspector",
     kind: "solo",
-    year: "2025",
+    year: "2026",
   },
 ];
 
