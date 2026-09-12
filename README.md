@@ -12,6 +12,12 @@ cp .env.example .env.local   # fill in RESEND_API_KEY for the contact form
 npm run dev
 ```
 
+Run the end-to-end tests against a production build:
+
+```bash
+npm run build && npm test
+```
+
 ## What's in here
 
 - **Theme** — `data-theme` on `<html>`, set by an inline script before first paint (no flash), persisted in `localStorage`, defaults to `prefers-color-scheme`.
@@ -21,7 +27,8 @@ npm run dev
 - **Contact form** — client validation → `POST /api/contact` → server validation, honeypot, per-IP rate limit, delivery via Resend.
 - **Project pages** — `/work/[slug]`, statically generated from `lib/content.ts` via `generateStaticParams`. Each has its own metadata and a generated OG image (`app/work/[slug]/opengraph-image.tsx`), so shared links show a per-project card.
 - **SEO/meta** — `generateMetadata`, generated `opengraph-image.tsx`, `sitemap.ts`, `robots.ts`, JSON-LD `Person`.
-- **CI** — every push runs type checking, a production build, a gzipped bundle budget (`scripts/check-bundle.mjs`, 120 kB ceiling), and Lighthouse against the homepage and a project page. Thresholds live in `.lighthouserc.json`; accessibility and SEO must score 100.
+- **Tests** — Playwright end-to-end suite in `tests/`, run against the production build on desktop and mobile viewports: terminal, command palette, theme persistence, contact form validation and states, API validation and honeypot, project pages and OG images, 404, security headers, and a clean console under CSP. `npm test` locally.
+- **CI** — every push runs type checking, a production build, a gzipped bundle budget (`scripts/check-bundle.mjs`, 120 kB ceiling), the Playwright suite, and Lighthouse against the homepage and a project page. Thresholds live in `.lighthouserc.json`; accessibility and SEO must score 100.
 - **Analytics** — Vercel Analytics and Speed Insights. No cookies, no cross-site identifiers, so no consent banner is required.
 - **Security headers** — static ones in `next.config.ts`; `Content-Security-Policy` in `middleware.ts` with a per-request nonce and `'strict-dynamic'`, so no `'unsafe-inline'` for scripts. Pages are rendered per request as a result.
 - **Rate limiting** — two layers. A Vercel WAF rule on `/api/contact` (edge, before the function runs), and `lib/ratelimit.ts` inside the function: Upstash Redis when configured, per-instance memory otherwise.
