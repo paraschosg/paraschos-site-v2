@@ -17,6 +17,7 @@ npm run dev
 - **Command palette** — `⌘K` / `Ctrl+K`. Keyboard-navigable listbox with proper ARIA.
 - **GitHub section** — React Server Component, fetched with `next: { revalidate: 1800 }`. Visitors never hit the GitHub API. Degrades to a link if the API is down.
 - **Contact form** — client validation → `POST /api/contact` → server validation, honeypot, per-IP rate limit, delivery via Resend.
+- **Project pages** — `/work/[slug]`, statically generated from `lib/content.ts` via `generateStaticParams`. Each has its own metadata and a generated OG image (`app/work/[slug]/opengraph-image.tsx`), so shared links show a per-project card.
 - **SEO/meta** — `generateMetadata`, generated `opengraph-image.tsx`, `sitemap.ts`, `robots.ts`, JSON-LD `Person`.
 - **Security headers** — set in `next.config.ts`.
 - **Accessibility** — skip link, landmarks, visible focus, `prefers-reduced-motion`, labelled form fields with `aria-invalid`/`aria-describedby`.

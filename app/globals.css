@@ -509,3 +509,20 @@ h3 {
   html { scroll-behavior: auto; }
   .term { transform: none; }
 }
+
+/* ---------- project page ---------- */
+.project-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.project-page { display: grid; gap: clamp(2rem, 5vw, 3.5rem); }
+.project-page .back { justify-self: start; text-decoration-thickness: 1px; }
+.project-page-head { display: grid; gap: 1rem; max-width: 46rem; }
+.project-page-meta { display: flex; align-items: center; gap: 0.75rem; }
+.project-page h1 { font-size: clamp(2rem, 1.2rem + 3.2vw, 3.6rem); }
+.project-page .lede { font-size: 1.2rem; color: var(--muted); max-width: 44ch; }
+.project-page-body { display: grid; gap: 2.5rem; align-items: start; }
+@media (min-width: 860px) { .project-page-body { grid-template-columns: 1.4fr 1fr; gap: 4rem; } }
+.project-page-body h2 { font-size: 1.1rem; margin-bottom: 1rem; color: var(--muted); font-weight: 600; }
+.project-page-body ul { display: grid; gap: 0.75rem; max-width: var(--measure); }
+.project-page-body li { padding-left: 1.1rem; position: relative; }
+.project-page-body li::before { content: ""; position: absolute; left: 0; top: 0.65em; width: 0.4rem; height: 0.4rem; border-radius: 50%; background: var(--accent); }
+.project-page-body .project-aside { gap: 1.25rem; }
+.project-page-nav { display: flex; justify-content: space-between; gap: 1rem; padding-top: 2rem; border-top: 1px solid var(--line); }

@@ -29,7 +29,12 @@ export default function CommandPalette() {
   const go = useCallback(
     (hash: string) => {
       close();
-      document.querySelector(hash)?.scrollIntoView({ block: "start" });
+      const el = document.querySelector(hash);
+      if (!el) {
+        window.location.href = `/${hash}`;
+        return;
+      }
+      el.scrollIntoView({ block: "start" });
       history.replaceState(null, "", hash);
     },
     [close],
