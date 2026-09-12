@@ -98,7 +98,7 @@ export default function Home() {
       </main>
       <footer className="footer">
         <div className="wrap">
-          <span>© {new Date().getFullYear()} {site.name}. Built with Next.js, no tracking, no cookies.</span>
+          <span>© {new Date().getFullYear()} {site.name}. Built with Next.js. Anonymous, cookie-free analytics — nothing that identifies you.</span>
           <span>Press <kbd className="kbd">⌘K</kbd> — or type <span className="mono">help</span> in the terminal.</span>
         </div>
       </footer>

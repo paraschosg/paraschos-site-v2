@@ -1,5 +1,7 @@
 # paraschos.site
 
+[![CI](https://github.com/paraschosg/paraschos-site-v2/actions/workflows/ci.yml/badge.svg)](https://github.com/paraschosg/paraschos-site-v2/actions/workflows/ci.yml)
+
 Personal site of George Paraschos. Next.js 15 (App Router), React 19, plain CSS with custom properties, self-hosted fonts.
 
 ## Run
@@ -19,6 +21,8 @@ npm run dev
 - **Contact form** — client validation → `POST /api/contact` → server validation, honeypot, per-IP rate limit, delivery via Resend.
 - **Project pages** — `/work/[slug]`, statically generated from `lib/content.ts` via `generateStaticParams`. Each has its own metadata and a generated OG image (`app/work/[slug]/opengraph-image.tsx`), so shared links show a per-project card.
 - **SEO/meta** — `generateMetadata`, generated `opengraph-image.tsx`, `sitemap.ts`, `robots.ts`, JSON-LD `Person`.
+- **CI** — every push runs type checking, a production build, a gzipped bundle budget (`scripts/check-bundle.mjs`, 120 kB ceiling), and Lighthouse against the homepage and a project page. Thresholds live in `.lighthouserc.json`; accessibility and SEO must score 100.
+- **Analytics** — Vercel Analytics and Speed Insights. No cookies, no cross-site identifiers, so no consent banner is required.
 - **Security headers** — set in `next.config.ts`.
 - **Accessibility** — skip link, landmarks, visible focus, `prefers-reduced-motion`, labelled form fields with `aria-invalid`/`aria-describedby`.
 

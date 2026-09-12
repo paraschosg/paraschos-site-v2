@@ -4,6 +4,8 @@ import "@fontsource-variable/jetbrains-mono";
 import "./globals.css";
 import { site } from "@/lib/content";
 import CommandPalette from "@/components/CommandPalette";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -57,6 +59,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a className="skip" href="#main">Skip to content</a>
         {children}
         <CommandPalette />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
