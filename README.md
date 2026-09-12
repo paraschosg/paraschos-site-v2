@@ -23,7 +23,8 @@ npm run dev
 - **SEO/meta** — `generateMetadata`, generated `opengraph-image.tsx`, `sitemap.ts`, `robots.ts`, JSON-LD `Person`.
 - **CI** — every push runs type checking, a production build, a gzipped bundle budget (`scripts/check-bundle.mjs`, 120 kB ceiling), and Lighthouse against the homepage and a project page. Thresholds live in `.lighthouserc.json`; accessibility and SEO must score 100.
 - **Analytics** — Vercel Analytics and Speed Insights. No cookies, no cross-site identifiers, so no consent banner is required.
-- **Security headers** — set in `next.config.ts`.
+- **Security headers** — static ones in `next.config.ts`; `Content-Security-Policy` in `middleware.ts` with a per-request nonce and `'strict-dynamic'`, so no `'unsafe-inline'` for scripts. Pages are rendered per request as a result.
+- **Rate limiting** — two layers. A Vercel WAF rule on `/api/contact` (edge, before the function runs), and `lib/ratelimit.ts` inside the function: Upstash Redis when configured, per-instance memory otherwise.
 - **Accessibility** — skip link, landmarks, visible focus, `prefers-reduced-motion`, labelled form fields with `aria-invalid`/`aria-describedby`.
 
 ## Deploy

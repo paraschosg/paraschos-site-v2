@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import "@fontsource-variable/bricolage-grotesque";
 import "@fontsource-variable/jetbrains-mono";
 import "./globals.css";
@@ -48,12 +49,13 @@ const jsonLd = {
   sameAs: [site.github, site.linkedin],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script nonce={nonce} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body>
         <a className="skip" href="#main">Skip to content</a>

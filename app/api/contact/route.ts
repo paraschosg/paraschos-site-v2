@@ -1,25 +1,19 @@
 import { NextResponse } from "next/server";
 import { site } from "@/lib/content";
+import { checkRateLimit } from "@/lib/ratelimit";
 
 export const runtime = "nodejs";
-
-// Tiny in-memory rate limit per instance. Good enough to stop a script;
-// for real abuse protection move this to Upstash/KV.
-const hits = new Map<string, number[]>();
-function limited(ip: string, max = 5, windowMs = 10 * 60 * 1000) {
-  const now = Date.now();
-  const recent = (hits.get(ip) ?? []).filter((t) => now - t < windowMs);
-  recent.push(now);
-  hits.set(ip, recent);
-  return recent.length > max;
-}
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: Request) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
-  if (limited(ip)) {
-    return NextResponse.json({ error: "Too many messages in a short time. Try again later." }, { status: 429 });
+  const limit = await checkRateLimit(ip);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Too many messages in a short time. Try again later." },
+      { status: 429, headers: limit.retryAfter ? { "Retry-After": String(limit.retryAfter) } : {} },
+    );
   }
 
   let body: Record<string, unknown>;
