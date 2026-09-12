@@ -526,3 +526,24 @@ h3 {
 .project-page-body li::before { content: ""; position: absolute; left: 0; top: 0.65em; width: 0.4rem; height: 0.4rem; border-radius: 50%; background: var(--accent); }
 .project-page-body .project-aside { gap: 1.25rem; }
 .project-page-nav { display: flex; justify-content: space-between; gap: 1rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+
+/* ---------- 404 ---------- */
+.notfound { padding-block: clamp(3rem, 8vw, 6rem); }
+.notfound-grid { display: grid; gap: 2.5rem; align-items: start; }
+@media (min-width: 900px) {
+  .notfound-grid { grid-template-columns: 1.1fr 1fr; gap: 4rem; }
+  .notfound-links { grid-column: 1 / -1; }
+}
+.notfound-code {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  margin-bottom: 1rem;
+}
+.notfound h1 { font-size: clamp(2rem, 1.2rem + 3.2vw, 3.4rem); }
+.notfound .lede { margin-top: 1.25rem; font-size: 1.15rem; color: var(--muted); max-width: 42ch; }
+.notfound-term { transform: rotate(0.5deg); }
+.notfound-term-body { height: auto; padding: 1rem 1rem 1.2rem; }
+.notfound-links { padding-top: 2rem; border-top: 1px solid var(--line); }
+.notfound-links ul { display: flex; flex-wrap: wrap; gap: 0.5rem 1.75rem; margin-top: 0.75rem; }
