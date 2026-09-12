@@ -33,7 +33,7 @@ test.describe("homepage", () => {
     });
     await page.goto("/");
     await page.getByRole("button", { name: /switch to .* theme/i }).click();
-    await page.keyboard.press("Control+k");
+    await openPalette(page);
     await page.keyboard.press("Escape");
     expect(errors).toEqual([]);
   });
@@ -65,12 +65,22 @@ test.describe("terminal", () => {
   });
 });
 
+// Keyboard shortcuts only work once React has attached its listeners, which
+// can land after the page is visually ready. Retry the shortcut until the
+// dialog appears instead of racing hydration.
+async function openPalette(page: import("@playwright/test").Page) {
+  const dialog = page.getByRole("dialog", { name: "Command palette" });
+  await expect(async () => {
+    if (!(await dialog.isVisible())) await page.keyboard.press("Control+k");
+    await expect(dialog).toBeVisible({ timeout: 500 });
+  }).toPass({ timeout: 10_000 });
+  return dialog;
+}
+
 test.describe("command palette", () => {
   test("opens with the keyboard, filters, and navigates", async ({ page }) => {
     await page.goto("/");
-    await page.keyboard.press("Control+k");
-    const dialog = page.getByRole("dialog", { name: "Command palette" });
-    await expect(dialog).toBeVisible();
+    const dialog = await openPalette(page);
     await page.getByRole("combobox").fill("contact");
     await expect(dialog.getByRole("option")).toHaveCount(1);
     await page.keyboard.press("Enter");
@@ -80,7 +90,7 @@ test.describe("command palette", () => {
 
   test("closes on Escape", async ({ page }) => {
     await page.goto("/");
-    await page.keyboard.press("Control+k");
+    await openPalette(page);
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).toBeHidden();
   });

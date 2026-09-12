@@ -11,6 +11,12 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Pages render per request (CSP nonce), which makes Next.js stream
+  // <title>/<meta> into the body instead of the head. Our metadata is
+  // static and instant, so there is nothing to gain from streaming it and
+  // real costs: Lighthouse and simpler crawlers only read the head.
+  // Matching every user agent here keeps metadata blocking for everyone.
+  htmlLimitedBots: /./,
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },

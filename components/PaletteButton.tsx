@@ -5,7 +5,7 @@ export default function PaletteButton() {
     <button
       type="button"
       onClick={() => window.dispatchEvent(new Event("palette:open"))}
-      aria-label="Open command palette"
+      aria-label="Search — open command palette"
       style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem" }}
     >
       <span className="hide-sm">Search</span>
