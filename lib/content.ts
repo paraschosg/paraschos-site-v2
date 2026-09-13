@@ -78,7 +78,7 @@ export const stack: Record<string, string[]> = {
 
 export const now = [
   "Finishing my degree in Information & Communication Systems Engineering at the University of the Aegean.",
-  "Part-time software programmer at Talent since April 2026.",
+  "Part-time software developer at Talent since April 2026.",
   "Building an Android permission auditor and a GDPR cookie scanner on the side.",
   "Learning system design properly instead of by accident.",
 ];
