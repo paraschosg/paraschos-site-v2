@@ -1,0 +1,23 @@
+name: Release
+
+# Opens (and keeps updated) a release PR that bumps package.json and writes
+# CHANGELOG.md from the commit history. Merging that PR creates a tag and a
+# GitHub Release. Commit messages follow Conventional Commits:
+#   feat: ...   → minor bump   fix: ...  → patch bump
+#   feat!: ...  → major bump   chore/docs/ci/refactor: ... → no release
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json

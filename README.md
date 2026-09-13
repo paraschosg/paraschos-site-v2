@@ -18,6 +18,45 @@ Run the end-to-end tests against a production build:
 npm run build && npm test
 ```
 
+## Architecture
+
+```mermaid
+flowchart LR
+    V([Visitor])
+    B[Bots and scanners]
+
+    subgraph Vercel
+        direction TB
+        WAF["Firewall<br/>rate limit, deny lists"]
+        MW["middleware.ts<br/>CSP nonce per request"]
+        subgraph App["Next.js 15, App Router"]
+            direction TB
+            P["/ and /work/[slug]<br/>server components"]
+            OG["opengraph-image<br/>generated per project"]
+            API["/api/contact<br/>validate, honeypot, rate limit"]
+        end
+        AN["Analytics and Speed Insights<br/>cookie-free"]
+    end
+
+    GH[(GitHub API)]
+    RS[Resend]
+    UP[(Upstash Redis)]
+    CF[Cloudflare DNS]
+
+    V -- paraschos.site --> CF --> WAF
+    B --> WAF
+    WAF --> MW --> App
+    P -. revalidate 30 min .-> GH
+    API -- email --> RS
+    API -. shared counter .-> UP
+    App --> AN
+```
+
+Everything the visitor sees is rendered on the server. The client ships one
+small bundle (about 108 kB gzipped, enforced in CI) for the terminal, palette,
+theme toggle and form. `lib/content.ts` is the single source of truth: the
+homepage, project pages, OG images, sitemap and terminal all read from it.
+
 ## What's in here
 
 - **Theme** — `data-theme` on `<html>`, set by an inline script before first paint (no flash), persisted in `localStorage`, defaults to `prefers-color-scheme`.
@@ -37,3 +76,18 @@ npm run build && npm test
 ## Deploy
 
 Push to GitHub, import in Vercel, add the env vars from `.env.example`. Point `contact@paraschos.site` at a verified Resend domain (or change `from` in `app/api/contact/route.ts`).
+
+## Releases
+
+Commits on `main` follow [Conventional Commits](https://www.conventionalcommits.org):
+
+```
+feat: add print stylesheet          → minor release
+fix: palette focus trap on mobile   → patch release
+feat!: drop the terminal            → major release
+chore: bump deps / docs: … / ci: …  → no release
+```
+
+[release-please](https://github.com/googleapis/release-please) watches `main`
+and keeps a release PR open with the version bump and `CHANGELOG.md` entries.
+Merging it tags the release. Nothing is published manually.
