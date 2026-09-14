@@ -8,6 +8,30 @@ type Line = { kind: "cmd" | "out" | "dim"; body: ReactNode };
 
 const COMMANDS = ["help", "whoami", "projects", "stack", "contact", "theme", "open", "clear", "history"];
 
+// Types out a hint in the empty input so a visitor sees the terminal is
+// theirs to use. Stops the moment they touch it, and never runs for anyone
+// who has asked for reduced motion.
+function useTypedHint(active: boolean) {
+  const [hint, setHint] = useState("");
+
+  useEffect(() => {
+    if (!active) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setHint("help");
+      return;
+    }
+    const word = "help";
+    let i = 0;
+    const start = window.setTimeout(function step() {
+      setHint(word.slice(0, ++i));
+      if (i < word.length) window.setTimeout(step, 110);
+    }, 700);
+    return () => window.clearTimeout(start);
+  }, [active]);
+
+  return hint;
+}
+
 export default function Terminal() {
   const [lines, setLines] = useState<Line[]>([
     { kind: "dim", body: "Welcome. This is a real terminal, sort of. Type `help`." },
@@ -15,8 +39,11 @@ export default function Terminal() {
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<string[]>([]);
   const [cursor, setCursor] = useState(-1);
+  const [touched, setTouched] = useState(false);
+  const [focused, setFocused] = useState(false);
   const bodyRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const hint = useTypedHint(!touched);
 
   useEffect(() => {
     bodyRef.current?.scrollTo({ top: bodyRef.current.scrollHeight });
@@ -110,12 +137,20 @@ export default function Terminal() {
           <div key={i} className={`term-line ${l.kind}`}>{l.body}</div>
         ))}
       </div>
-      <div className="term-input-row">
+      <div className="term-input-row" data-empty={input.length === 0 ? "" : undefined} data-focused={focused ? "" : undefined}>
+        {!focused && input.length === 0 && (
+          <span className="term-hint" aria-hidden="true">
+            {hint}
+            <span className="term-caret" />
+          </span>
+        )}
         <input
           ref={inputRef}
           className="term-input"
           value={input}
-          placeholder="help"
+          placeholder=""
+          onFocus={() => { setFocused(true); setTouched(true); }}
+          onBlur={() => setFocused(false)}
           aria-label="Terminal command"
           autoComplete="off"
           autoCapitalize="off"

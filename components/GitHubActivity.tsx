@@ -1,3 +1,4 @@
+import CountUp from "./CountUp";
 import { site } from "@/lib/content";
 
 type Event = {
@@ -5,7 +6,7 @@ type Event = {
   type: string;
   created_at: string;
   repo: { name: string };
-  payload: { action?: string; ref?: string; ref_type?: string; commits?: { message: string }[]; pull_request?: { title: string } };
+  payload: { action?: string; ref?: string; ref_type?: string; size?: number; distinct_size?: number; commits?: { message: string }[]; pull_request?: { title: string } };
 };
 type User = { public_repos: number; followers: number; created_at: string };
 
@@ -29,8 +30,12 @@ function describe(ev: Event): { icon: string; text: string } | null {
   const repo = ev.repo.name.replace(`${site.handle}/`, "");
   switch (ev.type) {
     case "PushEvent": {
-      const n = ev.payload.commits?.length ?? 0;
-      return { icon: "↑", text: `Pushed ${n} commit${n === 1 ? "" : "s"} to ${repo}` };
+      // `size` is the authoritative count; `commits` is capped by the API and
+      // absent from some payloads. If none of them give a number, say nothing
+      // about the count rather than claiming zero.
+      const n = ev.payload.size ?? ev.payload.distinct_size ?? ev.payload.commits?.length;
+      const what = n && n > 0 ? `${n} commit${n === 1 ? "" : "s"}` : "";
+      return { icon: "↑", text: what ? `Pushed ${what} to ${repo}` : `Pushed to ${repo}` };
     }
     case "CreateEvent":
       return { icon: "+", text: `Created ${ev.payload.ref_type} ${ev.payload.ref ?? ""} in ${repo}`.replace(/\s+/g, " ") };
@@ -79,9 +84,9 @@ export default async function GitHubActivity() {
     <div className="gh">
       <div>
         <div className="gh-stats">
-          <div className="gh-stat"><strong>{data.user.public_repos}</strong><span>public repos</span></div>
-          <div className="gh-stat"><strong>{data.user.followers}</strong><span>followers</span></div>
-          <div className="gh-stat"><strong>{years}</strong><span>years on GitHub</span></div>
+          <div className="gh-stat"><strong><CountUp value={data.user.public_repos} /></strong><span>public repos</span></div>
+          <div className="gh-stat"><strong><CountUp value={data.user.followers} /></strong><span>followers</span></div>
+          <div className="gh-stat"><strong><CountUp value={years} /></strong><span>years on GitHub</span></div>
         </div>
         <p className="gh-note">Rendered on the server and revalidated every 30 minutes — no client-side API calls, no rate limits hit by visitors.</p>
       </div>

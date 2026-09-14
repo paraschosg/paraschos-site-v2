@@ -114,14 +114,36 @@ h3 {
 .mono { font-family: var(--font-mono); font-size: 0.9em; }
 
 /* ---------- links & buttons ---------- */
+/* Underline is a pseudo-element rather than text-decoration so it can wipe:
+   in from the left on hover, out to the right on leave. */
 .link {
-  text-decoration: underline;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 0.2em;
-  text-decoration-color: color-mix(in srgb, var(--ink) 35%, transparent);
-  transition: text-decoration-color 0.15s;
+  position: relative;
+  text-decoration: none;
+  padding-bottom: 0.12em;
 }
-.link:hover { text-decoration-color: var(--accent); }
+.link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.5px;
+  background: color-mix(in srgb, var(--ink) 35%, transparent);
+}
+.link::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.5px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link:hover::before,
+.link:focus-visible::before { transform: scaleX(1); transform-origin: left; }
 
 .btn {
   display: inline-flex;
@@ -547,3 +569,34 @@ h3 {
 .notfound-term-body { height: auto; padding: 1rem 1rem 1.2rem; }
 .notfound-links { padding-top: 2rem; border-top: 1px solid var(--line); }
 .notfound-links ul { display: flex; flex-wrap: wrap; gap: 0.5rem 1.75rem; margin-top: 0.75rem; }
+
+/* ---------- counting stats ---------- */
+/* Tabular figures stop the number jittering as digits change width. */
+.gh-stat strong { font-variant-numeric: tabular-nums; }
+
+/* ---------- terminal caret ---------- */
+/* An untouched terminal shows a typed hint and a blinking block, so it reads
+   as something you can use rather than decoration. Both disappear the moment
+   the visitor focuses or types. */
+.term-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  color: var(--term-dim);
+  pointer-events: none;
+}
+.term-caret {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.95rem;
+  background: var(--pop);
+  animation: caret 1.1s step-end infinite;
+}
+@keyframes caret {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+.term-input-row[data-empty]:not([data-focused]) .term-input { flex: 0 1 2rem; }
+@media (prefers-reduced-motion: reduce) {
+  .term-caret { animation: none; }
+}

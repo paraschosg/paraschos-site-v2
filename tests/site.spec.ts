@@ -153,17 +153,38 @@ test.describe("contact form", () => {
     await expect(page.locator(".form-status[data-state=err]")).toContainText("Too many messages");
   });
 
+  // The rate limiter keys on x-forwarded-for, and every test here shares one
+  // machine. Give each call its own address so the limiter never decides the
+  // outcome of a test that isn't about the limiter.
+  const from = (id: string) => ({ headers: { "x-forwarded-for": `203.0.113.${id}` } });
+
   test("API rejects invalid payloads server-side", async ({ request }) => {
-    const res = await request.post("/api/contact", { data: { name: "", email: "x", message: "" } });
+    const res = await request.post("/api/contact", {
+      data: { name: "", email: "x", message: "" },
+      ...from("10"),
+    });
     expect(res.status()).toBe(422);
   });
 
   test("API silently accepts honeypot hits", async ({ request }) => {
     const res = await request.post("/api/contact", {
       data: { name: "Bot", email: "bot@example.com", message: "x".repeat(30), website: "http://spam" },
+      ...from("11"),
     });
     expect(res.status()).toBe(200);
     expect(await res.json()).toEqual({ ok: true });
+  });
+
+  test("API rate-limits repeated posts from one address", async ({ request }) => {
+    const codes: number[] = [];
+    for (let i = 0; i < 7; i++) {
+      const res = await request.post("/api/contact", {
+        data: { name: "Flooder", email: "flood@example.com", message: "y".repeat(30) },
+        ...from("12"),
+      });
+      codes.push(res.status());
+    }
+    expect(codes.at(-1)).toBe(429);
   });
 });
 
@@ -189,5 +210,52 @@ test.describe("not found", () => {
     expect(res?.status()).toBe(404);
     await expect(page.getByRole("heading", { level: 1 })).toContainText("doesn’t exist");
     await expect(page.getByRole("link", { name: "Back to the homepage" })).toBeVisible();
+  });
+});
+
+test.describe("motion", () => {
+  test("stats are the real numbers in the server HTML, not zeros", async ({ request }) => {
+    // The count-up must never be what puts the figure on the page: a crawler
+    // or a visitor without JavaScript has to see the true value.
+    const html = await (await request.get("/")).text();
+    const stats = [...html.matchAll(/<div class="gh-stat"><strong><span>(\d+)<\/span>/g)].map((m) => Number(m[1]));
+    expect(stats.length).toBeGreaterThan(0);
+    expect(stats.some((n) => n > 0)).toBe(true);
+  });
+
+  test("stats settle on the same numbers after animating", async ({ page }) => {
+    await page.goto("/");
+    const first = page.locator(".gh-stat strong").first();
+    await expect(first).toHaveText(/^\d+$/);
+    const settled = await first.textContent();
+    await page.waitForTimeout(1200);
+    expect(await first.textContent()).toBe(settled);
+  });
+
+  test("terminal shows a caret until it is used", async ({ page }) => {
+    await page.goto("/");
+    const row = page.locator(".term-input-row");
+    await expect(row).toHaveAttribute("data-empty", "");
+    await page.getByLabel("Terminal command").fill("whoami");
+    await expect(row).not.toHaveAttribute("data-empty", "");
+  });
+
+  test("terminal types its hint, then clears it on focus", async ({ page }) => {
+    await page.goto("/");
+    const hint = page.locator(".term-hint");
+    await expect(hint).toContainText("help", { timeout: 5000 });
+    await page.getByLabel("Terminal command").click();
+    await expect(hint).toBeHidden();
+  });
+
+  test("links keep an underline without JavaScript", async ({ browser }) => {
+    // The wipe is decoration; the resting underline must be there regardless.
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto("/");
+    const link = page.locator("a.link").first();
+    const height = await link.evaluate((el) => getComputedStyle(el, "::after").height);
+    expect(height).not.toBe("0px");
+    await context.close();
   });
 });
