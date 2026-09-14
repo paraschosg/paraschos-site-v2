@@ -156,12 +156,15 @@ test.describe("contact form", () => {
   // The rate limiter keys on x-forwarded-for, and every test here shares one
   // machine. Give each call its own address so the limiter never decides the
   // outcome of a test that isn't about the limiter.
-  const from = (id: string) => ({ headers: { "x-forwarded-for": `203.0.113.${id}` } });
+  let n = 0;
+  const from = () => ({
+    headers: { "x-forwarded-for": `203.0.113.${Date.now() % 250}.${n++}` },
+  });
 
   test("API rejects invalid payloads server-side", async ({ request }) => {
     const res = await request.post("/api/contact", {
       data: { name: "", email: "x", message: "" },
-      ...from("10"),
+      ...from(),
     });
     expect(res.status()).toBe(422);
   });
@@ -169,18 +172,19 @@ test.describe("contact form", () => {
   test("API silently accepts honeypot hits", async ({ request }) => {
     const res = await request.post("/api/contact", {
       data: { name: "Bot", email: "bot@example.com", message: "x".repeat(30), website: "http://spam" },
-      ...from("11"),
+      ...from(),
     });
     expect(res.status()).toBe(200);
     expect(await res.json()).toEqual({ ok: true });
   });
 
   test("API rate-limits repeated posts from one address", async ({ request }) => {
+    const ip = from();
     const codes: number[] = [];
     for (let i = 0; i < 7; i++) {
       const res = await request.post("/api/contact", {
         data: { name: "Flooder", email: "flood@example.com", message: "y".repeat(30) },
-        ...from("12"),
+        ...ip,
       });
       codes.push(res.status());
     }
@@ -223,13 +227,15 @@ test.describe("motion", () => {
     expect(stats.some((n) => n > 0)).toBe(true);
   });
 
-  test("stats settle on the same numbers after animating", async ({ page }) => {
+  test("stats count up to the server's number once scrolled into view", async ({ page, request }) => {
+    const html = await (await request.get("/")).text();
+    const expected = html.match(/<div class="gh-stat"><strong><span>(\d+)<\/span>/)?.[1];
+    expect(expected).toBeDefined();
+
     await page.goto("/");
     const first = page.locator(".gh-stat strong").first();
-    await expect(first).toHaveText(/^\d+$/);
-    const settled = await first.textContent();
-    await page.waitForTimeout(1200);
-    expect(await first.textContent()).toBe(settled);
+    await first.scrollIntoViewIfNeeded();
+    await expect(first).toHaveText(expected!, { timeout: 5000 });
   });
 
   test("terminal shows a caret until it is used", async ({ page }) => {
@@ -246,6 +252,16 @@ test.describe("motion", () => {
     await expect(hint).toContainText("help", { timeout: 5000 });
     await page.getByLabel("Terminal command").click();
     await expect(hint).toBeHidden();
+  });
+
+  test("underlines are as wide as the text, not the column", async ({ page }) => {
+    // .link is a grid item in the contact list; without justify-items: start
+    // it stretches and the underline runs the full column width.
+    await page.goto("/#contact");
+    const link = page.locator(".contact-links a.link").last();
+    const box = await link.boundingBox();
+    const column = await page.locator(".contact-links").boundingBox();
+    expect(box!.width).toBeLessThan(column!.width * 0.8);
   });
 
   test("links keep an underline without JavaScript", async ({ browser }) => {
