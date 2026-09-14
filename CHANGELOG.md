@@ -4,6 +4,13 @@ All notable changes to this site are recorded here. The file is maintained by
 [release-please](https://github.com/googleapis/release-please) from commit
 messages; entries below the first release heading were written by hand.
 
+## [2.2.0](https://github.com/paraschosg/paraschos-site-v2/compare/v2.1.0...v2.2.0) (2026-09-14)
+
+
+### Features
+
+* restrained motion on links, stats and the terminal ([6ef3224](https://github.com/paraschosg/paraschos-site-v2/commit/6ef32248df83960246cb153aa1651d17a8b4206a))
+
 ## [2.1.0](https://github.com/paraschosg/paraschos-site-v2/compare/v2.0.0...v2.1.0) (2026-09-13)
 
 
