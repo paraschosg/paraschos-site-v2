@@ -9,7 +9,7 @@ export function applyTheme(theme: Theme) {
   localStorage.setItem("theme", theme);
   document.querySelector('meta[name="theme-color"]')?.setAttribute(
     "content",
-    theme === "dark" ? "#14171d" : "#f4f5f2",
+    theme === "dark" ? "#171512" : "#f6f2ea",
   );
 }
 

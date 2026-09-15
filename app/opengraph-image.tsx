@@ -18,20 +18,20 @@ export default function OG() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: "#f4f5f2",
-          color: "#1d2433",
+          background: "#f6f2ea",
+          color: "#1a1f2b",
           fontFamily: "sans-serif",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 18, fontSize: 30 }}>
-          <div style={{ width: 22, height: 22, borderRadius: 999, background: "#ffc83d" }} />
+          <div style={{ width: 22, height: 22, borderRadius: 999, background: "#e0a458" }} />
           paraschos.site
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <div style={{ fontSize: 76, fontWeight: 700, lineHeight: 1.05, letterSpacing: -2, maxWidth: 1000 }}>
             {site.tagline}
           </div>
-          <div style={{ fontSize: 34, color: "#5b6270" }}>
+          <div style={{ fontSize: 34, color: "#5f5a52" }}>
             {site.name} · {site.role} · {site.location}
           </div>
         </div>

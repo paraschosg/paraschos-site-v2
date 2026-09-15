@@ -1,19 +1,24 @@
 /* ---------- tokens ---------- */
+/* Warm paper and ink instead of white and black: easier on the eyes over a
+   long read. Blue is the working accent; amber is reserved for the things
+   you can touch (prompt, caret, focus, the solo-build tag). */
 :root {
-  --bg: #f4f5f2;
-  --surface: #ffffff;
-  --ink: #1d2433;
-  --muted: #5b6270;
-  --line: #d6d9d3;
-  --accent: #2457e6;
-  --accent-ink: #ffffff;
-  --pop: #ffc83d;
-  --pop-ink: #1d2433;
-  --term-bg: #1d2433;
-  --term-ink: #e6e9ee;
-  --term-dim: #8a93a3;
-  --ok: #1f9d55;
-  --err: #d23f3f;
+  --bg: #f6f2ea;
+  --surface: #fbf9f4;
+  --ink: #1a1f2b;
+  --muted: #5f5a52;
+  --line: #e0d8ca;
+  --accent: #1d4ed8;
+  --accent-ink: #f6f2ea;
+  --pop: #e0a458;
+  --pop-ink: #241a0c;
+  --term-bg: #1a1f2b;
+  --term-ink: #ece7dd;
+  --term-dim: #8f8778;
+  --ok: #1f7a4d;
+  --err: #c2412d;
+  --wire: 29 78 216;      /* accent as RGB triplet for the canvas */
+  --wire-alpha: 0.42;
 
   --font-sans: "Bricolage Grotesque Variable", system-ui, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, Menlo, monospace;
@@ -27,14 +32,16 @@
 }
 
 [data-theme="dark"] {
-  --bg: #14171d;
-  --surface: #1b1f27;
-  --ink: #eceef1;
-  --muted: #9aa1ad;
-  --line: #2b303a;
-  --accent: #7f9eff;
-  --accent-ink: #0f1420;
-  --term-bg: #0f1218;
+  --bg: #171512;
+  --surface: #1f1c18;
+  --ink: #ece7dd;
+  --muted: #a39b8d;
+  --line: #2e2a24;
+  --accent: #7d9cff;
+  --accent-ink: #12151c;
+  --term-bg: #100f0d;
+  --wire: 224 164 88;     /* amber wireframe on dark */
+  --wire-alpha: 0.32;
   color-scheme: dark;
 }
 
@@ -50,6 +57,8 @@ html {
 
 body {
   margin: 0;
+  position: relative;
+  isolation: isolate;
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
@@ -273,7 +282,7 @@ h3 {
   font-family: var(--font-mono);
   font-size: 0.875rem;
   line-height: 1.5;
-  box-shadow: 0 20px 50px -20px rgba(29, 36, 51, 0.45);
+  box-shadow: 0 20px 50px -20px rgba(26, 31, 43, 0.45);
   overflow: hidden;
   transform: rotate(-0.6deg);
   transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
@@ -594,3 +603,12 @@ h3 {
 @media (prefers-reduced-motion: reduce) {
   .term-caret { animation: none; }
 }
+
+/* ---------- wireframe backdrop ---------- */
+.wire {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.wire canvas { display: block; width: 100%; height: 100%; }

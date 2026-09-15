@@ -24,14 +24,14 @@ export default async function OG({ params }: { params: Promise<{ slug: string }>
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 64,
-          background: "#f4f5f2",
-          color: "#1d2433",
+          background: "#f6f2ea",
+          color: "#1a1f2b",
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 28, color: "#5b6270" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 16, color: "#1d2433", fontWeight: 600 }}>
-            <div style={{ width: 20, height: 20, borderRadius: 999, background: "#ffc83d" }} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 28, color: "#5f5a52" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, color: "#1a1f2b", fontWeight: 600 }}>
+            <div style={{ width: 20, height: 20, borderRadius: 999, background: "#e0a458" }} />
             paraschos.site
           </div>
           <div>{`work / ${slug}${p ? ` · ${p.year}` : ""}`}</div>
@@ -39,7 +39,7 @@ export default async function OG({ params }: { params: Promise<{ slug: string }>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 22, maxWidth: 1000 }}>
           <div style={{ fontSize: 72, fontWeight: 700, lineHeight: 1.05, letterSpacing: -2 }}>{title}</div>
-          <div style={{ fontSize: 32, lineHeight: 1.35, color: "#5b6270" }}>{summary}</div>
+          <div style={{ fontSize: 32, lineHeight: 1.35, color: "#5f5a52" }}>{summary}</div>
         </div>
 
         <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
@@ -50,15 +50,15 @@ export default async function OG({ params }: { params: Promise<{ slug: string }>
                 fontWeight: 600,
                 padding: "8px 18px",
                 borderRadius: 999,
-                background: isSolo ? "#ffc83d" : "#dbe4fb",
-                color: isSolo ? "#1d2433" : "#0c447c",
+                background: isSolo ? "#e0a458" : "#dbe2fa",
+                color: isSolo ? "#1a1f2b" : "#0c447c",
               }}
             >
               {kindLabel[p.kind]}
             </div>
           )}
           {p?.stack.slice(0, 5).map((s) => (
-            <div key={s} style={{ fontSize: 22, padding: "8px 18px", borderRadius: 999, border: "2px solid #d6d9d3", background: "#ffffff" }}>
+            <div key={s} style={{ fontSize: 22, padding: "8px 18px", borderRadius: 999, border: "2px solid #e0d8ca", background: "#ffffff" }}>
               {s}
             </div>
           ))}

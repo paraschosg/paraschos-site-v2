@@ -283,3 +283,29 @@ test.describe("motion", () => {
       .toBe("1");
   });
 });
+
+test.describe("wireframe backdrop", () => {
+  test("is present, decorative, and behind the content", async ({ page }) => {
+    await page.goto("/");
+    const wire = page.locator(".wire");
+    await expect(wire).toHaveAttribute("aria-hidden", "true");
+    const z = await wire.evaluate((el) => getComputedStyle(el).zIndex);
+    expect(Number(z)).toBeLessThan(0);
+    // The canvas must not intercept clicks meant for the page.
+    const pe = await wire.evaluate((el) => getComputedStyle(el).pointerEvents);
+    expect(pe).toBe("none");
+  });
+
+  test("draws something", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForTimeout(400);
+    const painted = await page.locator(".wire canvas").evaluate((c) => {
+      const canvas = c as HTMLCanvasElement;
+      const ctx = canvas.getContext("2d")!;
+      const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      for (let i = 3; i < data.length; i += 4 * 97) if (data[i] > 0) return true;
+      return false;
+    });
+    expect(painted).toBe(true);
+  });
+});
