@@ -4,6 +4,13 @@ All notable changes to this site are recorded here. The file is maintained by
 [release-please](https://github.com/googleapis/release-please) from commit
 messages; entries below the first release heading were written by hand.
 
+## [2.3.0](https://github.com/paraschosg/paraschos-site-v2/compare/v2.2.1...v2.3.0) (2026-09-15)
+
+
+### Features
+
+* links show no underline until hover ([c0464a9](https://github.com/paraschosg/paraschos-site-v2/commit/c0464a9a33450e2621a54b8d91551071e24759e6))
+
 ## [2.2.1](https://github.com/paraschosg/paraschos-site-v2/compare/v2.2.0...v2.2.1) (2026-09-14)
 
 
