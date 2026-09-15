@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Header from "@/components/Header";
+import BoardHero from "@/components/BoardHero";
 import Terminal from "@/components/Terminal";
 import Projects from "@/components/Projects";
 import GitHubActivity from "@/components/GitHubActivity";
@@ -12,23 +13,16 @@ export default function Home() {
       <div id="top" />
       <Header />
       <main id="main">
-        <section className="hero">
-          <div className="wrap hero-grid">
+        <BoardHero />
+
+        <section className="section" id="console">
+          <div className="wrap console-grid">
             <div>
-              <p className="hero-eyebrow">
-                <span className="availability" aria-hidden="true" />
-                {site.name} · open to internships and collaborations
+              <div className="section-head"><h2>Console</h2></div>
+              <p className="muted prose">
+                The same sections, reachable by typing. <span className="mono">help</span> lists
+                what it knows; <span className="mono">open airline</span> jumps straight to a project.
               </p>
-              <h1>Backends that stay honest under load.</h1>
-              <p className="lede">
-                Software engineer in {site.location}, finishing a degree in Information &amp; Communication
-                Systems Engineering. I care about concurrency that’s actually correct, APIs that fail
-                loudly, and systems that don’t promise more than they can keep.
-              </p>
-              <div className="hero-actions">
-                <a className="btn btn-primary" href="#work">See the work</a>
-                <a className="btn" href="#contact">Get in touch</a>
-              </div>
             </div>
             <Terminal />
           </div>

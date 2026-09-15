@@ -284,28 +284,38 @@ test.describe("motion", () => {
   });
 });
 
-test.describe("wireframe backdrop", () => {
-  test("is present, decorative, and behind the content", async ({ page }) => {
+test.describe("board hero", () => {
+  test("every component is a real link to its section", async ({ page }) => {
     await page.goto("/");
-    const wire = page.locator(".wire");
-    await expect(wire).toHaveAttribute("aria-hidden", "true");
-    const z = await wire.evaluate((el) => getComputedStyle(el).zIndex);
-    expect(Number(z)).toBeLessThan(0);
-    // The canvas must not intercept clicks meant for the page.
-    const pe = await wire.evaluate((el) => getComputedStyle(el).pointerEvents);
-    expect(pe).toBe("none");
+    const parts = page.locator("a.part-link");
+    await expect(parts).toHaveCount(4);
+    for (const href of ["#work", "#stack", "#github", "#contact"]) {
+      await expect(page.locator(`a.part-link[href="${href}"]`)).toHaveCount(1);
+      // The target must exist, or the board points at nothing.
+      await expect(page.locator(href)).toBeAttached();
+    }
   });
 
-  test("draws something", async ({ page }) => {
+  test("hovering a component lights its traces and names it", async ({ page }) => {
     await page.goto("/");
-    await page.waitForTimeout(400);
-    const painted = await page.locator(".wire canvas").evaluate((c) => {
-      const canvas = c as HTMLCanvasElement;
-      const ctx = canvas.getContext("2d")!;
-      const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      for (let i = 3; i < data.length; i += 4 * 97) if (data[i] > 0) return true;
-      return false;
-    });
-    expect(painted).toBe(true);
+    await expect(page.locator(".board-readout")).toContainText("Hover a component");
+    await page.locator('a.part-link[href="#work"]').hover();
+    await expect(page.locator(".board-readout")).toContainText("WORK");
+    await expect(page.locator(".trace.on")).not.toHaveCount(0);
+  });
+
+  test("components are reachable and describable by keyboard", async ({ page }) => {
+    await page.goto("/");
+    const work = page.locator('a.part-link[href="#work"]');
+    await work.focus();
+    await expect(page.locator(".board-readout")).toContainText("WORK");
+  });
+
+  test("the diagram carries a text alternative", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator("svg.board-svg")).toHaveAttribute("role", "img");
+    const label = await page.locator("svg.board-svg").getAttribute("aria-label");
+    expect(label && label.length).toBeGreaterThan(20);
   });
 });
+

@@ -5,7 +5,6 @@ import "@fontsource-variable/jetbrains-mono";
 import "./globals.css";
 import { site } from "@/lib/content";
 import CommandPalette from "@/components/CommandPalette";
-import Wireframe from "@/components/Wireframe";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -28,8 +27,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f6f2ea" },
-    { media: "(prefers-color-scheme: dark)", color: "#171512" },
+    { media: "(prefers-color-scheme: light)", color: "#f1f2f4" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f1115" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -60,7 +59,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <a className="skip" href="#main">Skip to content</a>
-        <Wireframe />
         {children}
         <CommandPalette />
         <Analytics />
