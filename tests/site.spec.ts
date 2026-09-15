@@ -264,14 +264,22 @@ test.describe("motion", () => {
     expect(box!.width).toBeLessThan(column!.width * 0.8);
   });
 
-  test("links keep an underline without JavaScript", async ({ browser }) => {
-    // The wipe is decoration; the resting underline must be there regardless.
-    const context = await browser.newContext({ javaScriptEnabled: false });
-    const page = await context.newPage();
+  test("underline is hidden at rest and wipes in on hover", async ({ page }) => {
     await page.goto("/");
-    const link = page.locator("a.link").first();
-    const height = await link.evaluate((el) => getComputedStyle(el, "::after").height);
-    expect(height).not.toBe("0px");
-    await context.close();
+    const link = page.locator(".contact-links a.link").first();
+    await link.scrollIntoViewIfNeeded();
+    // scaleX lives in the first value of the transform matrix: 0 hidden, 1 drawn.
+    const scaleX = () =>
+      link.evaluate((el) => getComputedStyle(el, "::before").transform.split("(")[1]?.split(",")[0]);
+
+    expect(await scaleX()).toBe("0");
+    // Re-hover each poll: smooth scrolling can slide the link out from under
+    // the pointer before the transition has run.
+    await expect
+      .poll(async () => {
+        await link.hover();
+        return scaleX();
+      }, { timeout: 5000 })
+      .toBe("1");
   });
 });
