@@ -70,39 +70,38 @@ export default async function GitHubActivity() {
 
   if (!data) {
     return (
-      <div className="empty">
+      <p className="signals-empty">
         GitHub isn’t answering right now. The activity is still there at{" "}
         <a className="link" href={site.github} target="_blank" rel="noopener">github.com/{site.handle}</a>.
-      </div>
+      </p>
     );
   }
 
   const years = new Date().getFullYear() - new Date(data.user.created_at).getFullYear();
-  const items = data.events.map((e) => ({ e, d: describe(e) })).filter((x) => x.d).slice(0, 8);
+  // Oldest first, so the line reads left to right like the rest of the site.
+  const items = data.events.map((e) => ({ e, d: describe(e) })).filter((x) => x.d).slice(0, 6).reverse();
 
   return (
-    <div className="gh">
-      <div>
-        <div className="gh-stats">
-          <div className="gh-stat"><strong><CountUp value={data.user.public_repos} /></strong><span>public repos</span></div>
-          <div className="gh-stat"><strong><CountUp value={data.user.followers} /></strong><span>followers</span></div>
-          <div className="gh-stat"><strong><CountUp value={years} /></strong><span>years on GitHub</span></div>
-        </div>
-        <p className="gh-note">Rendered on the server and revalidated every 30 minutes — no client-side API calls, no rate limits hit by visitors.</p>
-      </div>
+    <div className="signals">
+      <dl className="signals-stats">
+        <div><dt>Public repos</dt><dd><CountUp value={data.user.public_repos} /></dd></div>
+        <div><dt>Followers</dt><dd><CountUp value={data.user.followers} /></dd></div>
+        <div><dt>Years on GitHub</dt><dd><CountUp value={years} /></dd></div>
+      </dl>
       {items.length === 0 ? (
-        <div className="empty">No public activity in the last while. Probably deep in a private repo.</div>
+        <p className="signals-empty">No public activity lately. Probably deep in a private repo.</p>
       ) : (
-        <ul className="gh-events">
+        <ol className="signals-line">
           {items.map(({ e, d }) => (
-            <li key={e.id} className="gh-event">
-              <span className="icon" aria-hidden="true">{d!.icon}</span>
-              <span>{d!.text}</span>
+            <li key={e.id}>
               <time dateTime={e.created_at}>{ago(e.created_at)}</time>
+              <span className="signals-dot" aria-hidden="true">{d!.icon}</span>
+              <span>{d!.text}</span>
             </li>
           ))}
-        </ul>
+        </ol>
       )}
+      <p className="signals-note">Rendered on the server and refreshed every 30 minutes, so visitors never hit GitHub’s rate limits.</p>
     </div>
   );
 }

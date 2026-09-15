@@ -9,7 +9,7 @@ export function applyTheme(theme: Theme) {
   localStorage.setItem("theme", theme);
   document.querySelector('meta[name="theme-color"]')?.setAttribute(
     "content",
-    theme === "dark" ? "#14171d" : "#f4f5f2",
+    theme === "dark" ? "#231b15" : "#e6d8c1",
   );
 }
 
@@ -32,6 +32,7 @@ export default function ThemeToggle() {
   return (
     <button
       type="button"
+      className="tool"
       aria-label={`Switch to ${next} theme`}
       title={`Switch to ${next} theme`}
       onClick={() => {

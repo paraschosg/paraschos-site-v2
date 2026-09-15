@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { projects, site, stack } from "@/lib/content";
 import { applyTheme, currentTheme } from "./ThemeToggle";
+import { goToStation } from "@/lib/go";
 
 type Line = { kind: "cmd" | "out" | "dim"; body: ReactNode };
 
@@ -61,7 +62,7 @@ export default function Terminal() {
     const [name, ...args] = cmd.split(/\s+/);
     switch (name.toLowerCase()) {
       case "help":
-        print({ kind: "out", body: "Commands: " + COMMANDS.join("  ") }, { kind: "dim", body: "Tab completes. ↑↓ walk history. ⌘K opens the palette." });
+        print({ kind: "out", body: "Commands: " + COMMANDS.join("  ") }, { kind: "dim", body: "Tab completes. ↑↓ walk history. ⌘K opens the palette. Esc closes." });
         break;
       case "whoami":
         print({ kind: "out", body: `${site.name} — ${site.role}, ${site.location}.` }, { kind: "out", body: site.tagline });
@@ -90,14 +91,13 @@ export default function Terminal() {
       case "open": {
         const target = args[0];
         const project = projects.find((p) => p.slug === target);
-        const sections = ["work", "stack", "github", "contact"];
+        const sections = ["work", "stack", "now", "github", "contact"];
         if (project) {
-          const el = document.getElementById(`project-${project.slug}`) as HTMLDetailsElement | null;
-          if (el) { el.open = true; el.scrollIntoView({ block: "center" }); }
-          print({ kind: "dim", body: `Opened ${project.title}.` });
+          goToStation(`project-${project.slug}`);
+          print({ kind: "dim", body: `Moved to ${project.title}.` });
         } else if (target && sections.includes(target)) {
-          document.getElementById(target)?.scrollIntoView();
-          print({ kind: "dim", body: `Scrolled to ${target}.` });
+          goToStation(target);
+          print({ kind: "dim", body: `Moved to ${target}.` });
         } else {
           print({ kind: "out", body: `open: what? Try one of: ${[...projects.map((p) => p.slug), ...sections].join(", ")}` });
         }
@@ -113,7 +113,7 @@ export default function Terminal() {
         print({ kind: "out", body: "Nice try. This incident will be reported to nobody." });
         break;
       case "ls":
-        print({ kind: "out", body: "work/  stack/  github/  contact/  .secrets  (just kidding)" });
+        print({ kind: "out", body: "work/  stack/  now/  github/  contact/  .secrets  (just kidding)" });
         break;
       default:
         print({ kind: "out", body: `${name}: command not found. Type \`help\`.` });
@@ -122,10 +122,6 @@ export default function Terminal() {
 
   return (
     <div className="term" aria-label="Interactive terminal">
-      <div className="term-bar">
-        <span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" />
-        <span className="term-title">george@paraschos.site</span>
-      </div>
       <div
         className="term-body"
         ref={bodyRef}
