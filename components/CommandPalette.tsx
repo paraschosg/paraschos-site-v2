@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { site } from "@/lib/content";
 import { applyTheme, currentTheme } from "./ThemeToggle";
+import { goToStation } from "@/lib/go";
 
 type Command = {
   id: string;
@@ -29,13 +30,7 @@ export default function CommandPalette() {
   const go = useCallback(
     (hash: string) => {
       close();
-      const el = document.querySelector(hash);
-      if (!el) {
-        window.location.href = `/${hash}`;
-        return;
-      }
-      el.scrollIntoView({ block: "start" });
-      history.replaceState(null, "", hash);
+      goToStation(hash.slice(1));
     },
     [close],
   );
@@ -44,6 +39,7 @@ export default function CommandPalette() {
     () => [
       { id: "work", label: "Go to work", icon: "#", hint: "section", keywords: "projects", run: () => go("#work") },
       { id: "stack", label: "Go to stack", icon: "#", hint: "section", keywords: "skills tools", run: () => go("#stack") },
+      { id: "now", label: "Go to now", icon: "#", hint: "section", keywords: "current", run: () => go("#now") },
       { id: "github", label: "Go to GitHub activity", icon: "#", hint: "section", run: () => go("#github") },
       { id: "contact", label: "Go to contact", icon: "#", hint: "section", keywords: "email message", run: () => go("#contact") },
       {
@@ -73,7 +69,7 @@ export default function CommandPalette() {
       },
       { id: "gh", label: "Open GitHub profile", icon: "↗", hint: "github.com", run: () => { window.open(site.github, "_blank", "noopener"); close(); } },
       { id: "li", label: "Open LinkedIn", icon: "↗", hint: "linkedin.com", run: () => { window.open(site.linkedin, "_blank", "noopener"); close(); } },
-      { id: "terminal", label: "Focus the terminal", icon: "❯", hint: "try `help`", run: () => { close(); (document.querySelector(".term-input") as HTMLInputElement | null)?.focus(); } },
+      { id: "terminal", label: "Open the terminal", icon: "❯", hint: "or press ~", run: () => { close(); window.dispatchEvent(new Event("terminal:open")); } },
     ],
     [go, close, copied],
   );

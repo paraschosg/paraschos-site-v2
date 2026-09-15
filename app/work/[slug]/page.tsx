@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import Header from "@/components/Header";
+import SiteBar from "@/components/SiteBar";
+import Sketch from "@/components/Sketch";
 import { projects, site } from "@/lib/content";
 
 type Params = { slug: string };
 
 const kindLabel = { solo: "Solo build", coursework: "Coursework", work: "Work" } as const;
+const sketchFor = { airline: "airline", "camera-sense": "camera", "image-inspector": "inspector" } as const;
 
 // Pre-render every project page at build time; no runtime lookups.
 export function generateStaticParams(): Params[] {
@@ -41,43 +43,37 @@ export default async function ProjectPage({ params }: { params: Promise<Params> 
 
   return (
     <>
-      <Header />
-      <main id="main" className="section">
-        <article className="wrap project-page">
-          <Link href="/#work" className="link muted back">← All work</Link>
-
-          <header className="project-page-head">
-            <p className="project-page-meta">
-              <span className="project-year">{p.year}</span>
-              <span className="project-kind" data-kind={p.kind}>{kindLabel[p.kind]}</span>
-            </p>
+      <SiteBar />
+      <main id="main" className="case">
+        <article>
+          <header className="case-head">
+            <Link href={`/#project-${p.slug}`} className="link case-back">Back to the strip</Link>
+            <p className="project-meta"><span>{p.year}, {kindLabel[p.kind].toLowerCase()}</span></p>
             <h1>{p.title}</h1>
             <p className="lede">{p.summary}</p>
           </header>
 
-          <div className="project-page-body">
+          <figure className="case-figure">
+            <Sketch kind={sketchFor[p.slug as keyof typeof sketchFor]} />
+          </figure>
+
+          <div className="case-body">
             <section>
               <h2>What it does</h2>
-              <ul>
+              <ul className="project-detail">
                 {p.detail.map((d) => <li key={d}>{d}</li>)}
               </ul>
             </section>
-
-            <aside className="project-aside">
+            <aside>
               <h2>Built with</h2>
-              <div className="chips">
-                {p.stack.map((s) => <span key={s} className="chip">{s}</span>)}
-              </div>
-              <a className="btn btn-primary" href={p.href} target="_blank" rel="noopener">
-                View source
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
-              </a>
+              <p className="project-stack">{p.stack.join(", ")}</p>
+              <a className="btn btn-primary" href={p.href} target="_blank" rel="noopener">View source on GitHub</a>
             </aside>
           </div>
 
-          <nav className="project-page-nav" aria-label="Other projects">
-            {prev ? <Link href={`/work/${prev.slug}`} className="link">← {prev.title}</Link> : <span />}
-            {next ? <Link href={`/work/${next.slug}`} className="link">{next.title} →</Link> : <span />}
+          <nav className="case-nav" aria-label="Other projects">
+            {prev ? <Link href={`/work/${prev.slug}`} className="link">Previous: {prev.title}</Link> : <span />}
+            {next ? <Link href={`/work/${next.slug}`} className="link">Next: {next.title}</Link> : <span />}
           </nav>
         </article>
       </main>
