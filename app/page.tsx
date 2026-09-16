@@ -12,12 +12,16 @@ const kindLabel = { solo: "Solo build", coursework: "Coursework", work: "Work" }
 const sketchFor = { airline: "airline", "camera-sense": "camera", "image-inspector": "inspector" } as const;
 
 const stations: Station[] = [
-  { id: "top", label: "Hello" },
-  ...projects.map((p) => ({ id: `project-${p.slug}`, label: p.title.replace(" management system", "") })),
-  { id: "stack", label: "Stack" },
-  { id: "now", label: "Now" },
-  { id: "github", label: "GitHub" },
-  { id: "contact", label: "Contact" },
+  { id: "top", label: "Hello", icon: "home" },
+  ...projects.map((p) => ({
+    id: `project-${p.slug}`,
+    label: p.title.replace(" management system", ""),
+    icon: ({ airline: "plane", "camera-sense": "camera", "image-inspector": "image" } as const)[p.slug as "airline"] ?? "image",
+  })),
+  { id: "stack", label: "Stack", icon: "layers" },
+  { id: "now", label: "Now", icon: "notebook" },
+  { id: "github", label: "GitHub", icon: "branch" },
+  { id: "contact", label: "Contact", icon: "mail" },
 ];
 
 export default function Home() {

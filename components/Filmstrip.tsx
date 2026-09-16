@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import Dock, { type DockItem } from "./Dock";
 
-export type Station = { id: string; label: string };
+export type Station = DockItem;
 
 // The homepage is one horizontal strip. The page still scrolls vertically —
 // wheel, trackpad, keyboard and scrollbar all behave normally — and that
@@ -19,7 +20,6 @@ export default function Filmstrip({ stations, children }: { stations: Station[];
   const trackRef = useRef<HTMLDivElement>(null);
   const [horizontal, setHorizontal] = useState(false);
   const [active, setActive] = useState(0);
-  const [progress, setProgress] = useState(0);
   const geo = useRef({ travel: 0, top: 0, lefts: [] as number[] });
 
   const stationEls = () => Array.from(trackRef.current?.querySelectorAll<HTMLElement>("[data-station]") ?? []);
@@ -89,7 +89,6 @@ export default function Filmstrip({ stations, children }: { stations: Station[];
           if (s.offsetLeft <= x + vw * 0.45) current = i;
         });
         setActive(current);
-        setProgress(travel ? x / travel : 0);
       } else {
         let current = 0;
         els.forEach((s, i) => {
@@ -171,22 +170,6 @@ export default function Filmstrip({ stations, children }: { stations: Station[];
     };
   }, [go, active, stations]);
 
-  // The ruler labels lean slightly toward a nearby pointer.
-  useEffect(() => {
-    if (!horizontal) return;
-    const labels = Array.from(document.querySelectorAll<HTMLElement>(".ruler-stop"));
-    const move = (e: PointerEvent) => {
-      for (const l of labels) {
-        const r = l.getBoundingClientRect();
-        const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
-        const d = Math.hypot(dx, dy);
-        l.style.translate = d < 90 ? `${dx * 0.18}px ${dy * 0.18}px` : "";
-      }
-    };
-    window.addEventListener("pointermove", move, { passive: true });
-    return () => { window.removeEventListener("pointermove", move); labels.forEach((l) => (l.style.translate = "")); };
-  }, [horizontal]);
-
   return (
     <div className="filmstrip" data-filmstrip data-mode={horizontal ? "h" : "v"}>
       <div className="runway" ref={runwayRef}>
@@ -194,18 +177,7 @@ export default function Filmstrip({ stations, children }: { stations: Station[];
           <div className="track" ref={trackRef}>{children}</div>
         </div>
       </div>
-      <nav className="ruler" aria-label="Stations" style={{ "--progress": progress } as React.CSSProperties}>
-        <div className="ruler-line" aria-hidden="true"><span /></div>
-        <ol>
-          {stations.map((s, i) => (
-            <li key={s.id}>
-              <button type="button" className="ruler-stop" aria-current={i === active ? "location" : undefined} onClick={() => go(s.id)}>
-                {s.label}
-              </button>
-            </li>
-          ))}
-        </ol>
-      </nav>
+      <Dock items={stations} active={active} onSelect={go} />
     </div>
   );
 }
