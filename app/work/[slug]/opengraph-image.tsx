@@ -24,14 +24,14 @@ export default async function OG({ params }: { params: Promise<{ slug: string }>
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 64,
-          background: "#e6d8c1",
-          color: "#4a3628",
+          background: "#f4f5f2",
+          color: "#1d2433",
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 28, color: "#7d6a56" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 16, color: "#4a3628", fontWeight: 600 }}>
-            <div style={{ width: 20, height: 20, borderRadius: 999, background: "#a85a3c" }} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 28, color: "#5b6270" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, color: "#1d2433", fontWeight: 600 }}>
+            <div style={{ width: 20, height: 20, borderRadius: 999, background: "#ffc83d" }} />
             paraschos.site
           </div>
           <div>{`work / ${slug}${p ? ` · ${p.year}` : ""}`}</div>
@@ -39,7 +39,7 @@ export default async function OG({ params }: { params: Promise<{ slug: string }>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 22, maxWidth: 1000 }}>
           <div style={{ fontSize: 72, fontWeight: 700, lineHeight: 1.05, letterSpacing: -2 }}>{title}</div>
-          <div style={{ fontSize: 32, lineHeight: 1.35, color: "#7d6a56" }}>{summary}</div>
+          <div style={{ fontSize: 32, lineHeight: 1.35, color: "#5b6270" }}>{summary}</div>
         </div>
 
         <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
@@ -50,8 +50,8 @@ export default async function OG({ params }: { params: Promise<{ slug: string }>
                 fontWeight: 600,
                 padding: "8px 18px",
                 borderRadius: 999,
-                background: isSolo ? "#a85a3c" : "#dbe4fb",
-                color: isSolo ? "#4a3628" : "#0c447c",
+                background: isSolo ? "#ffc83d" : "#dbe4fb",
+                color: isSolo ? "#1d2433" : "#0c447c",
               }}
             >
               {kindLabel[p.kind]}

@@ -1,121 +1,107 @@
 import { Suspense } from "react";
-import Link from "next/link";
-import SiteBar from "@/components/SiteBar";
-import Filmstrip, { type Station } from "@/components/Filmstrip";
-import Sketch from "@/components/Sketch";
-import StackStrips from "@/components/StackStrips";
+import Header from "@/components/Header";
+import Terminal from "@/components/Terminal";
+import Projects from "@/components/Projects";
 import GitHubActivity from "@/components/GitHubActivity";
 import ContactForm from "@/components/ContactForm";
-import { now, projects, site } from "@/lib/content";
-
-const kindLabel = { solo: "Solo build", coursework: "Coursework", work: "Work" } as const;
-const sketchFor = { airline: "airline", "camera-sense": "camera", "image-inspector": "inspector" } as const;
-
-const stations: Station[] = [
-  { id: "top", label: "Hello" },
-  ...projects.map((p) => ({ id: `project-${p.slug}`, label: p.title.replace(" management system", "") })),
-  { id: "stack", label: "Stack" },
-  { id: "now", label: "Now" },
-  { id: "github", label: "GitHub" },
-  { id: "contact", label: "Contact" },
-];
+import { now, site, stack } from "@/lib/content";
 
 export default function Home() {
   return (
     <>
-      <SiteBar />
+      <div id="top" />
+      <Header />
       <main id="main">
-        <Filmstrip stations={stations}>
-          <section className="station station-hello" id="top" data-station aria-labelledby="hello-title">
-            <div className="hello-copy">
-              <p className="hello-status"><span className="availability" aria-hidden="true" />Open to internships and collaborations</p>
-              <h1 id="hello-title">Backends that stay honest under load.</h1>
+        <section className="hero">
+          <div className="wrap hero-grid">
+            <div>
+              <p className="hero-eyebrow">
+                <span className="availability" aria-hidden="true" />
+                {site.name} · open to internships and collaborations
+              </p>
+              <h1>Backends that stay honest under load.</h1>
               <p className="lede">
-                I’m a software engineer in {site.location}, finishing a degree in Information &amp; Communication
+                Software engineer in {site.location}, finishing a degree in Information &amp; Communication
                 Systems Engineering. I care about concurrency that’s actually correct, APIs that fail
                 loudly, and systems that don’t promise more than they can keep.
               </p>
-              <div className="actions">
+              <div className="hero-actions">
                 <a className="btn btn-primary" href="#work">See the work</a>
                 <a className="btn" href="#contact">Get in touch</a>
               </div>
             </div>
-            <figure className="hello-figure">
-              <Sketch kind="load" className="sketch-intro" />
-              <figcaption>Keep scrolling. The page moves sideways.</figcaption>
-            </figure>
-          </section>
-
-          <div className="work-group" id="work">
-            <h2 className="visually-hidden">Work</h2>
-            {projects.map((p, i) => (
-              <article key={p.slug} className="station station-project" id={`project-${p.slug}`} data-station aria-labelledby={`t-${p.slug}`}>
-                <div className="project-copy">
-                  <p className="project-meta">
-                    <span>Work {i + 1} of {projects.length}</span>
-                    <span>{p.year}, {kindLabel[p.kind].toLowerCase()}</span>
-                  </p>
-                  <h3 id={`t-${p.slug}`}>{p.title}</h3>
-                  <p className="project-summary">{p.summary}</p>
-                  <ul className="project-detail">
-                    {p.detail.map((d) => <li key={d}>{d}</li>)}
-                  </ul>
-                  <p className="project-stack">{p.stack.join(", ")}</p>
-                  <div className="actions">
-                    <Link className="btn btn-primary" href={`/work/${p.slug}`}>Read the case study</Link>
-                    <a className="btn" href={p.href} target="_blank" rel="noopener">View source</a>
-                  </div>
-                </div>
-                <div className="project-figure">
-                  <Sketch kind={sketchFor[p.slug as keyof typeof sketchFor]} />
-                </div>
-              </article>
-            ))}
+            <Terminal />
           </div>
+        </section>
 
-          <section className="station station-stack" id="stack" data-station aria-labelledby="stack-title">
-            <h2 id="stack-title">What I build with</h2>
-            <StackStrips />
-          </section>
+        <section className="section" id="work">
+          <div className="wrap">
+            <div className="section-head">
+              <h2>Work</h2>
+              <p className="muted prose">Three things worth your time. Each one taught me something I couldn’t have read.</p>
+            </div>
+            <Projects />
+          </div>
+        </section>
 
-          <section className="station station-now" id="now" data-station aria-labelledby="now-title">
-            <div className="journal">
-              <h2 id="now-title">Now</h2>
-              <ul>
+        <section className="section" id="stack">
+          <div className="wrap two-col">
+            <div>
+              <div className="section-head"><h2>Stack</h2></div>
+              <dl className="stack-list">
+                {Object.entries(stack).map(([k, v]) => (
+                  <div key={k} className="stack-row">
+                    <dt>{k}</dt>
+                    <dd>{v.join(", ")}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+            <div>
+              <div className="section-head"><h2>Now</h2></div>
+              <ul className="now-list">
                 {now.map((n) => <li key={n}>{n}</li>)}
               </ul>
             </div>
-          </section>
+          </div>
+        </section>
 
-          <section className="station station-github" id="github" data-station aria-labelledby="gh-title">
-            <h2 id="gh-title">Recent activity on GitHub</h2>
-            <Suspense fallback={<p className="signals-empty">Fetching activity…</p>}>
+        <section className="section" id="github">
+          <div className="wrap">
+            <div className="section-head">
+              <h2>On GitHub</h2>
+              <p className="muted prose">Live, not a screenshot. Pulled from the GitHub API at build time and refreshed on a schedule.</p>
+            </div>
+            <Suspense fallback={<div className="empty">Fetching activity…</div>}>
               <GitHubActivity />
             </Suspense>
-          </section>
+          </div>
+        </section>
 
-          <section className="station station-contact" id="contact" data-station aria-labelledby="contact-title">
-            <div className="postcard">
-              <div className="postcard-message">
-                <h2 id="contact-title">Say hello</h2>
-                <p>
-                  Internships, collaborations, a bug in one of my repos, or a distributed-systems argument
-                  you want to have with someone. All welcome.
-                </p>
-                <ul className="postcard-links">
-                  <li><a className="link" href={`mailto:${site.email}`}>{site.email}</a></li>
-                  <li><a className="link" href={site.github} target="_blank" rel="noopener">github.com/{site.handle}</a></li>
-                  <li><a className="link" href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a></li>
-                </ul>
-                <p className="postcard-foot">
-                  © {new Date().getFullYear()} {site.name}. Built with Next.js. Anonymous, cookie-free analytics.
-                </p>
+        <section className="section" id="contact">
+          <div className="wrap contact-grid">
+            <div>
+              <div className="section-head"><h2>Say hello</h2></div>
+              <p className="prose muted">
+                Internships, collaborations, a bug in one of my repos, or a distributed-systems argument
+                you want to have with someone — all welcome.
+              </p>
+              <div className="contact-links">
+                <a className="link" href={`mailto:${site.email}`}>{site.email}</a>
+                <a className="link" href={site.github} target="_blank" rel="noopener">github.com/{site.handle}</a>
+                <a className="link" href={site.linkedin} target="_blank" rel="noopener">LinkedIn</a>
               </div>
-              <ContactForm />
             </div>
-          </section>
-        </Filmstrip>
+            <ContactForm />
+          </div>
+        </section>
       </main>
+      <footer className="footer">
+        <div className="wrap">
+          <span>© {new Date().getFullYear()} {site.name}. Built with Next.js. Anonymous, cookie-free analytics — nothing that identifies you.</span>
+          <span>Press <kbd className="kbd">⌘K</kbd> — or type <span className="mono">help</span> in the terminal.</span>
+        </div>
+      </footer>
     </>
   );
 }

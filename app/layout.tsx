@@ -1,12 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import "@fontsource-variable/bricolage-grotesque";
-import "@fontsource-variable/fraunces";
 import "@fontsource-variable/jetbrains-mono";
 import "./globals.css";
 import { site } from "@/lib/content";
 import CommandPalette from "@/components/CommandPalette";
-import TerminalWindow from "@/components/TerminalWindow";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -29,8 +27,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#e6d8c1" },
-    { media: "(prefers-color-scheme: dark)", color: "#231b15" },
+    { media: "(prefers-color-scheme: light)", color: "#f4f5f2" },
+    { media: "(prefers-color-scheme: dark)", color: "#14171d" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -63,7 +61,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <a className="skip" href="#main">Skip to content</a>
         {children}
         <CommandPalette />
-        <TerminalWindow />
         <Analytics />
         <SpeedInsights />
       </body>

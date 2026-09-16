@@ -4,7 +4,7 @@ test.describe("homepage", () => {
   test("renders the hero and the essential sections", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    for (const id of ["work", "stack", "now", "github", "contact"]) {
+    for (const id of ["work", "stack", "github", "contact"]) {
       await expect(page.locator(`#${id}`)).toBeAttached();
     }
   });
@@ -39,54 +39,29 @@ test.describe("homepage", () => {
   });
 });
 
-// The terminal is a floating window now; open it the way a visitor would,
-// retrying until hydration has attached the click handler.
-async function openTerminal(page: import("@playwright/test").Page) {
-  await page.goto("/");
-  const input = page.getByLabel("Terminal command");
-  await expect(async () => {
-    if (!(await input.isVisible())) await page.getByRole("button", { name: "Open terminal" }).click();
-    await expect(input).toBeVisible({ timeout: 500 });
-  }).toPass({ timeout: 10_000 });
-  return input;
-}
-
 test.describe("terminal", () => {
   test("runs a command and prints output", async ({ page }) => {
-    const input = await openTerminal(page);
+    await page.goto("/");
+    const input = page.getByLabel("Terminal command");
     await input.fill("whoami");
     await input.press("Enter");
     await expect(page.getByRole("log")).toContainText("George Paraschos");
   });
 
   test("rejects unknown commands helpfully", async ({ page }) => {
-    const input = await openTerminal(page);
+    await page.goto("/");
+    const input = page.getByLabel("Terminal command");
     await input.fill("nonsense");
     await input.press("Enter");
     await expect(page.getByRole("log")).toContainText("command not found");
   });
 
-  test("open <project> moves to that station", async ({ page }) => {
-    const input = await openTerminal(page);
+  test("open <project> expands and reveals it", async ({ page }) => {
+    await page.goto("/");
+    const input = page.getByLabel("Terminal command");
     await input.fill("open airline");
     await input.press("Enter");
-    await expect(page.getByRole("log")).toContainText("Moved to Airline management system");
-    await expect(page).toHaveURL(/#project-airline$/);
-  });
-});
-
-test.describe("filmstrip", () => {
-  test("the ruler moves to a station", async ({ page }) => {
-    await page.goto("/");
-    const strip = page.locator("[data-filmstrip]");
-    // Horizontal mode switches on after hydration, and only with a fine pointer.
-    await expect(strip).toHaveAttribute("data-mode", /h|v/);
-    await page.waitForTimeout(500);
-    test.skip((await strip.getAttribute("data-mode")) !== "h", "horizontal mode not active on this device");
-    const ruler = page.getByRole("navigation", { name: "Stations" });
-    await ruler.getByRole("button", { name: "Contact" }).click();
-    await expect(page).toHaveURL(/#contact$/);
-    await expect(ruler.getByRole("button", { name: "Contact" })).toHaveAttribute("aria-current", "location");
+    await expect(page.locator("#project-airline")).toHaveAttribute("open", "");
   });
 });
 
@@ -247,43 +222,64 @@ test.describe("motion", () => {
     // The count-up must never be what puts the figure on the page: a crawler
     // or a visitor without JavaScript has to see the true value.
     const html = await (await request.get("/")).text();
-    const stats = [...html.matchAll(/<dd><span>(\d+)<\/span><\/dd>/g)].map((m) => Number(m[1]));
+    const stats = [...html.matchAll(/<div class="gh-stat"><strong><span>(\d+)<\/span>/g)].map((m) => Number(m[1]));
     expect(stats.length).toBeGreaterThan(0);
     expect(stats.some((n) => n > 0)).toBe(true);
   });
 
-  test("stats count up to the server's number once their station is in view", async ({ page, request }) => {
+  test("stats count up to the server's number once scrolled into view", async ({ page, request }) => {
     const html = await (await request.get("/")).text();
-    const expected = html.match(/<dd><span>(\d+)<\/span><\/dd>/)?.[1];
+    const expected = html.match(/<div class="gh-stat"><strong><span>(\d+)<\/span>/)?.[1];
     expect(expected).toBeDefined();
 
-    await page.goto("/#github");
-    await expect(page.locator(".signals-stats dd").first()).toHaveText(expected!, { timeout: 5000 });
+    await page.goto("/");
+    const first = page.locator(".gh-stat strong").first();
+    await first.scrollIntoViewIfNeeded();
+    await expect(first).toHaveText(expected!, { timeout: 5000 });
   });
 
   test("terminal shows a caret until it is used", async ({ page }) => {
-    const input = await openTerminal(page);
+    await page.goto("/");
     const row = page.locator(".term-input-row");
-    await input.blur();
     await expect(row).toHaveAttribute("data-empty", "");
-    await input.fill("whoami");
+    await page.getByLabel("Terminal command").fill("whoami");
     await expect(row).not.toHaveAttribute("data-empty", "");
   });
 
-  test("filmstrip drawings are complete without JavaScript", async ({ browser }) => {
-    const context = await browser.newContext({ javaScriptEnabled: false });
-    const page = await context.newPage();
+  test("terminal types its hint, then clears it on focus", async ({ page }) => {
     await page.goto("/");
-    const offset = await page.locator(".station-project .s-main").first().evaluate((el) => getComputedStyle(el).strokeDashoffset);
-    expect(parseFloat(offset)).toBe(0);
-    await context.close();
+    const hint = page.locator(".term-hint");
+    await expect(hint).toContainText("help", { timeout: 5000 });
+    await page.getByLabel("Terminal command").click();
+    await expect(hint).toBeHidden();
   });
 
   test("underlines are as wide as the text, not the column", async ({ page }) => {
+    // .link is a grid item in the contact list; without justify-items: start
+    // it stretches and the underline runs the full column width.
     await page.goto("/#contact");
-    const link = page.locator(".postcard-links a.link").last();
+    const link = page.locator(".contact-links a.link").last();
     const box = await link.boundingBox();
-    const column = await page.locator(".postcard-links").boundingBox();
+    const column = await page.locator(".contact-links").boundingBox();
     expect(box!.width).toBeLessThan(column!.width * 0.8);
+  });
+
+  test("underline is hidden at rest and wipes in on hover", async ({ page }) => {
+    await page.goto("/");
+    const link = page.locator(".contact-links a.link").first();
+    await link.scrollIntoViewIfNeeded();
+    // scaleX lives in the first value of the transform matrix: 0 hidden, 1 drawn.
+    const scaleX = () =>
+      link.evaluate((el) => getComputedStyle(el, "::before").transform.split("(")[1]?.split(",")[0]);
+
+    expect(await scaleX()).toBe("0");
+    // Re-hover each poll: smooth scrolling can slide the link out from under
+    // the pointer before the transition has run.
+    await expect
+      .poll(async () => {
+        await link.hover();
+        return scaleX();
+      }, { timeout: 5000 })
+      .toBe("1");
   });
 });
