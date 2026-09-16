@@ -190,18 +190,50 @@ h3 {
   transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
 }
 .brand:hover .brand-dot { transform: scale(1.35) rotate(90deg); }
-.nav { display: flex; align-items: center; gap: 0.25rem; }
-.nav a, .nav button {
-  padding: 0.45rem 0.7rem;
-  border-radius: var(--radius);
-  text-decoration: none;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  color: var(--muted);
-  transition: color 0.15s, background-color 0.15s;
+/* ---------- dock ---------- */
+/* Dark in both themes, like a macOS dock sitting over the page. */
+.dock {
+  position: fixed; left: 50%; bottom: 1rem; z-index: 60; translate: -50% 0;
 }
-.nav a:hover, .nav button:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.dock ul {
+  display: flex; align-items: flex-end; column-gap: 0.5rem;
+  margin: 0; padding: 0.55rem; list-style: none;
+  border-radius: 1.4rem;
+  background: rgba(22, 22, 25, 0.82);
+  backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09), 0 20px 45px -18px rgba(0, 0, 0, 0.55);
+}
+.dock-tile {
+  --size: 48px;
+  position: relative; display: grid; place-items: center;
+  width: var(--size); height: var(--size); padding: 0;
+  border: 0; border-radius: calc(var(--size) * 0.29);
+  background: linear-gradient(180deg, #34343a 0%, #1d1d21 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 4px 10px -4px rgba(0, 0, 0, 0.6);
+  color: #f4f4f5; cursor: pointer; text-decoration: none;
+}
+.dock-tile svg { width: 52%; height: 52%; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.dock-tile[aria-current]::after {
+  content: ""; position: absolute; left: 50%; bottom: -0.42rem; width: 4px; height: 4px; margin-left: -2px;
+  border-radius: 50%; background: #e4e4e7;
+}
+.dock-tile:focus-visible { outline: 2px solid var(--pop); outline-offset: 3px; }
+.dock-sep { align-self: stretch; width: 1px; margin-block: 0.35rem; background: rgba(255, 255, 255, 0.12); }
+.dock-tip {
+  position: absolute; left: 50%; bottom: calc(100% + 0.65rem); translate: -50% 4px;
+  padding: 0.28rem 0.6rem; border-radius: 0.45rem; white-space: nowrap; pointer-events: none;
+  background: rgba(22, 22, 25, 0.92); color: #f4f4f5; font-size: 0.8rem;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+  opacity: 0; transition: opacity 0.15s, translate 0.15s;
+}
+.dock-tile:hover .dock-tip, .dock-tile:focus-visible .dock-tip { opacity: 1; translate: -50% 0; }
+/* Room at the end of every page so the dock never covers the last line. */
+body { padding-bottom: 6rem; }
+@media (max-width: 480px) {
+  .dock ul { column-gap: 0.3rem; padding: 0.4rem; border-radius: 1.1rem; }
+  .dock-tile { --size: 38px; }
+}
+@media (prefers-reduced-motion: reduce) { .dock-tip { transition: none; } }
 .kbd {
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -212,7 +244,6 @@ h3 {
   background: var(--surface);
   color: var(--muted);
 }
-@media (max-width: 640px) { .nav .hide-sm { display: none; } }
 
 /* ---------- sections ---------- */
 .section { padding-block: clamp(3.5rem, 9vw, 7rem); }
