@@ -4,6 +4,13 @@ All notable changes to this site are recorded here. The file is maintained by
 [release-please](https://github.com/googleapis/release-please) from commit
 messages; entries below the first release heading were written by hand.
 
+## [2.5.0](https://github.com/paraschosg/paraschos-site-v2/compare/v2.4.0...v2.5.0) (2026-09-16)
+
+
+### Features
+
+* **nav:** macOS-style magnetic dock for the site menu ([3ec7daa](https://github.com/paraschosg/paraschos-site-v2/commit/3ec7daad2d66e84911258ebdede171dc498dd443))
+
 ## [2.4.0](https://github.com/paraschosg/paraschos-site-v2/compare/v2.3.0...v2.4.0) (2026-09-16)
 
 
