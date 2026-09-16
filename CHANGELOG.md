@@ -4,6 +4,14 @@ All notable changes to this site are recorded here. The file is maintained by
 [release-please](https://github.com/googleapis/release-please) from commit
 messages; entries below the first release heading were written by hand.
 
+## [2.4.0](https://github.com/paraschosg/paraschos-site-v2/compare/v2.3.0...v2.4.0) (2026-09-16)
+
+
+### Features
+
+* Field Notes redesign — horizontal filmstrip homepage ([ed207e6](https://github.com/paraschosg/paraschos-site-v2/commit/ed207e67e1844e1612ead2409481d51566e38b8c))
+* **nav:** replace the bottom ruler with a magnetic dock ([5e23fa9](https://github.com/paraschosg/paraschos-site-v2/commit/5e23fa96a905d910833712c0f1dbc9f8b997815a))
+
 ## [2.3.0](https://github.com/paraschosg/paraschos-site-v2/compare/v2.2.1...v2.3.0) (2026-09-15)
 
 
