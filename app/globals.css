@@ -25,7 +25,7 @@
 
   --pad-x: clamp(1.25rem, 5vw, 5.5rem);
   --bar-h: 4.25rem;
-  --ruler-h: 5.5rem;
+  --ruler-h: 5.25rem;
 
   color-scheme: light;
 }
@@ -113,7 +113,6 @@ body:has([data-mode="h"]) .sitebar { position: fixed; inset: 0 0 auto 0; backgro
    ========================================================================= */
 .station { position: relative; padding: clamp(3.5rem, 10vw, 6rem) var(--pad-x); border-top: 1px solid var(--rule); }
 .station-hello { border-top: 0; padding-top: 2rem; }
-[data-mode="v"] .station:last-child { padding-bottom: calc(var(--ruler-h) + 3rem); }
 
 [data-mode="h"] .viewport { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
 [data-mode="h"] .track { display: flex; height: 100%; width: max-content; will-change: transform; }
@@ -127,42 +126,31 @@ body:has([data-mode="h"]) .sitebar { position: fixed; inset: 0 0 auto 0; backgro
 [data-mode="h"] .station-hello { border-left: 0; }
 [data-mode="h"] .station-now { width: 62vw; }
 
-/* ---------- dock ---------- */
-.dock {
-  position: fixed; left: 50%; bottom: 0.9rem; z-index: 30; translate: -50% 0;
+/* ---------- ruler ---------- */
+.ruler { display: none; }
+[data-mode="h"] .ruler {
+  display: block; position: fixed; inset: auto var(--pad-x) 0; z-index: 30;
+  height: var(--ruler-h); padding-top: 1.1rem;
 }
-.dock ol {
-  display: flex; align-items: flex-end; column-gap: 0.4rem;
-  padding: 0.45rem; border-radius: 1.1rem;
-  background: color-mix(in srgb, var(--paper) 82%, transparent);
-  backdrop-filter: blur(12px);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rule) 70%, transparent), 0 18px 40px -22px rgba(40, 26, 16, 0.55);
+.ruler-line {
+  position: relative; height: 9px;
+  background: repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px 12px) bottom / 100% 5px no-repeat,
+              linear-gradient(var(--rule), var(--rule)) bottom / 100% 1px no-repeat;
 }
-.dock-tile {
-  --size: 44px;
-  position: relative; display: grid; place-items: center;
-  width: var(--size); height: var(--size); padding: 0; cursor: pointer;
-  border: 0; border-radius: calc(var(--size) * 0.28);
-  background: linear-gradient(180deg, var(--ground), color-mix(in srgb, var(--ground) 80%, var(--rule)));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rule) 80%, transparent), inset 0 1px 0 color-mix(in srgb, #fff 35%, transparent);
-  color: var(--ink);
+.ruler-line span {
+  position: absolute; left: 0; bottom: 0; height: 2px; width: 100%;
+  background: var(--clay); transform-origin: left; transform: scaleX(var(--progress, 0));
 }
-.dock-tile svg { width: 46%; height: 46%; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.dock-tile:hover, .dock-tile[aria-current] { color: var(--clay); }
-.dock-tile[aria-current]::after {
-  content: ""; position: absolute; left: 50%; bottom: -0.38rem; width: 4px; height: 4px; margin-left: -2px;
-  border-radius: 50%; background: var(--ink);
+.ruler ol { display: flex; justify-content: space-between; margin-top: 0.55rem; }
+.ruler-stop {
+  position: relative; border: 0; background: none; padding: 0.3rem 0.2rem; cursor: pointer;
+  color: var(--muted); font-size: 0.85rem; transition: color 0.2s, translate 0.25s cubic-bezier(.2,.8,.2,1);
 }
-.dock-tip {
-  position: absolute; left: 50%; bottom: calc(100% + 0.6rem); translate: -50% 4px;
-  padding: 0.25rem 0.55rem; border-radius: 0.4rem; white-space: nowrap; pointer-events: none;
-  background: var(--ink); color: var(--ground); font-size: 0.8rem;
-  opacity: 0; transition: opacity 0.15s, translate 0.15s;
-}
-.dock-tile:hover .dock-tip, .dock-tile:focus-visible .dock-tip { opacity: 1; translate: -50% 0; }
-@media (max-width: 480px) {
-  .dock ol { column-gap: 0.25rem; padding: 0.35rem; }
-  .dock-tile { --size: 36px; }
+.ruler-stop:hover { color: var(--ink); }
+.ruler-stop[aria-current] { color: var(--ink); }
+.ruler-stop[aria-current]::before {
+  content: ""; position: absolute; left: 50%; top: -0.95rem; width: 7px; height: 7px; margin-left: -3.5px;
+  background: var(--clay); border-radius: 50%;
 }
 
 /* ---------- drawings ---------- */
