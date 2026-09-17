@@ -4,6 +4,14 @@ All notable changes to this site are recorded here. The file is maintained by
 [release-please](https://github.com/googleapis/release-please) from commit
 messages; entries below the first release heading were written by hand.
 
+## [2.7.0](https://github.com/paraschosg/paraschos-site-v2/compare/v2.6.0...v2.7.0) (2026-09-17)
+
+
+### Features
+
+* **dock:** fade-and-rise page transitions ([cd83c03](https://github.com/paraschosg/paraschos-site-v2/commit/cd83c032ff34efbee79ee6b5365da579a9bb0056))
+* **nav:** switch-panel menu replaces the dock ([c66ca87](https://github.com/paraschosg/paraschos-site-v2/commit/c66ca874116a9330eb61fa55cb00c7567408898e))
+
 ## [2.6.0](https://github.com/paraschosg/paraschos-site-v2/compare/v2.5.0...v2.6.0) (2026-09-17)
 
 
