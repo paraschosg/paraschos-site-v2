@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { markArrived, zoomTo } from "./dockTransition";
+import { markArrived, pageTransition } from "./dockTransition";
 import { applyTheme, currentTheme } from "./ThemeToggle";
 
 // Stroke icons on a 24px grid.
@@ -41,12 +41,12 @@ export default function Dock() {
   // A page transition started on the previous page waits for this.
   useEffect(() => { markArrived(); }, [pathname]);
 
-  // Plain left-clicks zoom into the page; new-tab clicks behave as usual.
+  // Plain left-clicks cross-fade to the page; new-tab clicks behave as usual.
   const open = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
     if (href === pathname) return;
-    zoomTo(href, e.currentTarget, (h) => router.push(h));
+    pageTransition(href, (h) => router.push(h));
   };
 
   useEffect(() => {

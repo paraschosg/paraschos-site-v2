@@ -1,10 +1,8 @@
-// Zoom-from-icon page transitions for the dock, built on the View Transitions
-// API. The new page starts at the size and position of the tile you clicked
-// and grows to fill the screen, like an app opening from the macOS dock.
+// Page transitions for the dock, on the View Transitions API.
 //
-// The navigation itself is Next's client-side router. startViewTransition
-// captures the old page, then waits on a promise that the next page's dock
-// resolves when it mounts, so the new snapshot is the fully rendered page.
+// The old page fades out, the new one fades in while rising a few pixels.
+// Only opacity and a small translate are animated — both are cheap for the
+// compositor, so it stays smooth on large pages.
 
 let arrived: (() => void) | null = null;
 
@@ -16,16 +14,13 @@ export function markArrived() {
 
 type Doc = Document & { startViewTransition?: (cb: () => Promise<void>) => { ready: Promise<void>; finished: Promise<void> } };
 
-export function zoomTo(href: string, tile: HTMLElement, navigate: (href: string) => void) {
+export function pageTransition(href: string, navigate: (href: string) => void) {
   const doc = document as Doc;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!doc.startViewTransition || reduce) {
     navigate(href);
     return;
   }
-
-  const r = tile.getBoundingClientRect();
-  const vw = window.innerWidth, vh = window.innerHeight;
 
   const transition = doc.startViewTransition(
     () =>
@@ -38,26 +33,16 @@ export function zoomTo(href: string, tile: HTMLElement, navigate: (href: string)
   );
 
   transition.ready.then(() => {
-    const easing = "cubic-bezier(0.2, 0.9, 0.25, 1)";
-    const duration = 460;
+    const easing = "cubic-bezier(0.22, 0.8, 0.3, 1)";
 
-    // New page: from the tile's box to the whole viewport.
     document.documentElement.animate(
-      {
-        transform: [
-          `translate(${r.left}px, ${r.top}px) scale(${r.width / vw}, ${r.height / vh})`,
-          "translate(0, 0) scale(1, 1)",
-        ],
-        borderRadius: ["22%", "0%"],
-        opacity: [0.4, 1],
-      },
-      { duration, easing, pseudoElement: "::view-transition-new(root)", fill: "both" },
+      { opacity: [0, 1], transform: ["translateY(14px)", "translateY(0)"] },
+      { duration: 320, easing, pseudoElement: "::view-transition-new(root)", fill: "both" },
     );
 
-    // Old page recedes slightly behind it.
     document.documentElement.animate(
-      { transform: ["scale(1)", "scale(0.94)"], opacity: [1, 0.35] },
-      { duration, easing, pseudoElement: "::view-transition-old(root)", fill: "both" },
+      { opacity: [1, 0] },
+      { duration: 150, easing: "linear", pseudoElement: "::view-transition-old(root)", fill: "both" },
     );
   }).catch(() => {});
 }

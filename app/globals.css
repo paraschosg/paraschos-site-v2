@@ -232,11 +232,9 @@ body:has(.landing) { padding-bottom: 0; }
 
 /* ---------- dock ---------- */
 /* Dark in both themes, like a macOS dock sitting over the page. */
-/* Page transitions: the dock is its own layer, so it stays put while the
-   page behind it zooms. The zoom itself is set from script per click. */
-::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; transform-origin: 0 0; }
-::view-transition-old(root) { transform-origin: 50% 50%; }
-::view-transition-new(root) { overflow: hidden; }
+/* Page transitions: the dock is its own layer, so it stays put while the page
+   behind it fades and rises. The animation is set from script per click. */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 ::view-transition-group(dock) { animation: none; }
 ::view-transition-image-pair(dock) { isolation: auto; }
 ::view-transition-old(dock) { display: none; }
