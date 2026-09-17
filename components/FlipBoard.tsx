@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 // until it reaches its letter, one flap at a time, like an airport departures
 // board. Text is wrapped by word to fit however many columns the board has.
 
-const DRUM = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,:;!?-'/&@#";
+const DRUM = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,:;!?-'/&@#$%()+=";
 const FLAP_MS = 55;          // one flap
 const MAX_START_MS = 450;    // latest a tile may start, so the board ripples
 
@@ -54,6 +54,9 @@ export default function FlipBoard({ text, rows = 6, maxCols = 22, minCols = 12 }
   const [shown, setShown] = useState<string[]>(() => Array(total).fill(" "));
   const [prev, setPrev] = useState<string[]>(() => Array(total).fill(" "));
   const [steps, setSteps] = useState<number[]>(() => Array(total).fill(0));
+  // What the tiles currently read, so a new message flips on from there
+  // instead of blanking the board first.
+  const onBoard = useRef<string[]>([]);
 
   // Fewer, larger tiles on narrow screens.
   useEffect(() => {
@@ -70,21 +73,37 @@ export default function FlipBoard({ text, rows = 6, maxCols = 22, minCols = 12 }
     const target = wrap(text, cols, rows).join("").split("");
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
+      onBoard.current = target;
       setShown(target); setPrev(target); setSteps(Array(target.length).fill(0));
       return;
     }
 
-    const current = Array(target.length).fill(" ");
-    const last = Array(target.length).fill(" ");
+    const current = onBoard.current.length === target.length ? [...onBoard.current] : Array(target.length).fill(" ");
+    const last = [...current];
     const count = Array(target.length).fill(0);
+    const changedAt = Array(target.length).fill(-10);
     const startAt = target.map(() => Math.random() * MAX_START_MS);
     const t0 = performance.now();
     let frame = 0;
     let lastTick = 0;
+    let tickNo = 0;
+
+    // A tile is "flipping" for two ticks after its last change, long enough
+    // for both leaves to finish. Once it settles, both halves show the same
+    // character and the leaves are removed, so nothing can freeze half-drawn.
+    const publish = () => {
+      const flipping = changedAt.map((t) => tickNo - t <= 2);
+      onBoard.current = [...current];
+      setShown([...current]);
+      setPrev(current.map((c, i) => (flipping[i] ? last[i] : c)));
+      setSteps(count.map((n, i) => (flipping[i] ? n : 0)));
+      return flipping.some(Boolean);
+    };
 
     const tick = (now: number) => {
       if (now - lastTick >= FLAP_MS) {
         lastTick = now;
+        tickNo++;
         let busy = false;
         for (let i = 0; i < target.length; i++) {
           if (current[i] === target[i]) continue;
@@ -95,13 +114,14 @@ export default function FlipBoard({ text, rows = 6, maxCols = 22, minCols = 12 }
           // Characters not on the drum snap straight to themselves.
           if (!DRUM.includes(target[i])) current[i] = target[i];
           count[i]++;
+          changedAt[i] = tickNo;
         }
-        setShown([...current]); setPrev([...last]); setSteps([...count]);
-        if (!busy) return;
+        const animating = publish();
+        if (!busy && !animating) return;
       }
       frame = requestAnimationFrame(tick);
     };
-    setShown([...current]); setPrev([...last]); setSteps([...count]);
+    publish();
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
   }, [text, cols, rows]);

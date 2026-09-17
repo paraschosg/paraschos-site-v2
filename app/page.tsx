@@ -1,14 +1,12 @@
-import FlipBoard from "@/components/FlipBoard";
+import LandingBoard from "@/components/LandingBoard";
 import Dock from "@/components/Dock";
 import { site } from "@/lib/content";
-
-const MESSAGE = `${site.name}\nBackends that stay\nhonest under load.`;
 
 export default function Home() {
   return (
     <main id="main" className="landing">
-      <h1 className="visually-hidden">{MESSAGE.replace(/\n/g, " ")}</h1>
-      <FlipBoard text={MESSAGE} />
+      <h1 className="visually-hidden">{site.name}. Backends that stay honest under load.</h1>
+      <LandingBoard />
       <Dock />
     </main>
   );
