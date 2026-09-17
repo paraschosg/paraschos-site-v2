@@ -4,6 +4,15 @@ All notable changes to this site are recorded here. The file is maintained by
 [release-please](https://github.com/googleapis/release-please) from commit
 messages; entries below the first release heading were written by hand.
 
+## [2.6.0](https://github.com/paraschosg/paraschos-site-v2/compare/v2.5.0...v2.6.0) (2026-09-17)
+
+
+### Features
+
+* **dock:** zoom-from-icon page transitions ([c3df169](https://github.com/paraschosg/paraschos-site-v2/commit/c3df1697aa0987068ce93c3d0d980a25d30b5592))
+* **landing:** flip board rotates through messages every 5 seconds ([bef1b84](https://github.com/paraschosg/paraschos-site-v2/commit/bef1b84b5ed0cd9f79e7ad99b2e23a928153ee64))
+* split-flap landing page, one page per dock item ([f415b2e](https://github.com/paraschosg/paraschos-site-v2/commit/f415b2e27e63603eec9f157af410afa318a72875))
+
 ## [2.5.0](https://github.com/paraschosg/paraschos-site-v2/compare/v2.4.0...v2.5.0) (2026-09-16)
 
 
