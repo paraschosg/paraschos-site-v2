@@ -27,25 +27,19 @@ export default function CommandPalette() {
   }, []);
 
   const go = useCallback(
-    (hash: string) => {
+    (path: string) => {
       close();
-      const el = document.querySelector(hash);
-      if (!el) {
-        window.location.href = `/${hash}`;
-        return;
-      }
-      el.scrollIntoView({ block: "start" });
-      history.replaceState(null, "", hash);
+      window.location.href = path;
     },
     [close],
   );
 
   const commands = useMemo<Command[]>(
     () => [
-      { id: "work", label: "Go to work", icon: "#", hint: "section", keywords: "projects", run: () => go("#work") },
-      { id: "stack", label: "Go to stack", icon: "#", hint: "section", keywords: "skills tools", run: () => go("#stack") },
-      { id: "github", label: "Go to GitHub activity", icon: "#", hint: "section", run: () => go("#github") },
-      { id: "contact", label: "Go to contact", icon: "#", hint: "section", keywords: "email message", run: () => go("#contact") },
+      { id: "work", label: "Go to work", icon: "#", hint: "page", keywords: "projects", run: () => go("/work") },
+      { id: "stack", label: "Go to stack", icon: "#", hint: "page", keywords: "skills tools", run: () => go("/stack") },
+      { id: "github", label: "Go to GitHub activity", icon: "#", hint: "page", run: () => go("/github") },
+      { id: "contact", label: "Go to contact", icon: "#", hint: "page", keywords: "email message", run: () => go("/contact") },
       {
         id: "theme",
         label: "Toggle theme",

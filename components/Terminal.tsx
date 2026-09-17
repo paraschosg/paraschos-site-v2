@@ -92,12 +92,11 @@ export default function Terminal() {
         const project = projects.find((p) => p.slug === target);
         const sections = ["work", "stack", "github", "contact"];
         if (project) {
-          const el = document.getElementById(`project-${project.slug}`) as HTMLDetailsElement | null;
-          if (el) { el.open = true; el.scrollIntoView({ block: "center" }); }
-          print({ kind: "dim", body: `Opened ${project.title}.` });
+          window.location.href = `/work/${project.slug}`;
+          print({ kind: "dim", body: `Opening ${project.title}…` });
         } else if (target && sections.includes(target)) {
-          document.getElementById(target)?.scrollIntoView();
-          print({ kind: "dim", body: `Scrolled to ${target}.` });
+          window.location.href = `/${target}`;
+          print({ kind: "dim", body: `Opening ${target}…` });
         } else {
           print({ kind: "out", body: `open: what? Try one of: ${[...projects.map((p) => p.slug), ...sections].join(", ")}` });
         }

@@ -22,7 +22,7 @@ export default function NotFound() {
             </p>
             <div className="hero-actions">
               <Link className="btn btn-primary" href="/">Back to the homepage</Link>
-              <Link className="btn" href="/#contact">Tell me what broke</Link>
+              <Link className="btn" href="/contact">Tell me what broke</Link>
             </div>
           </div>
 

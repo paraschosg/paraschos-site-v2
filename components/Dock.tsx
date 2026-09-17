@@ -33,7 +33,7 @@ const REACH = 120;    // px either side where the pull fades out
 export default function Dock() {
   const pathname = usePathname();
   const listRef = useRef<HTMLUListElement>(null);
-  const [active, setActive] = useState<string>(pathname.startsWith("/work") ? "work" : "home");
+  const active = pathname === "/" ? "home" : SECTIONS.find((sec) => pathname.startsWith(`/${sec.id}`))?.id ?? null;
   const [theme, setTheme] = useState<"light" | "dark" | null>(null);
 
   useEffect(() => {
@@ -42,22 +42,6 @@ export default function Dock() {
     window.addEventListener("themechange", onChange);
     return () => window.removeEventListener("themechange", onChange);
   }, []);
-
-  // Which section the reader is in, on the homepage.
-  useEffect(() => {
-    if (pathname !== "/") return;
-    const els = SECTIONS.map((s) => document.getElementById(s.id)).filter(Boolean) as HTMLElement[];
-    const update = () => {
-      const line = window.innerHeight * 0.4;
-      let current = "home";
-      for (const el of els) if (el.getBoundingClientRect().top <= line) current = el.id;
-      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) current = "contact";
-      setActive(current);
-    };
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    return () => window.removeEventListener("scroll", update);
-  }, [pathname]);
 
   // Magnification.
   useEffect(() => {
@@ -116,13 +100,13 @@ export default function Dock() {
     <nav className="dock" aria-label="Primary">
       <ul ref={listRef}>
         <li>
-          <a className="dock-tile" href="/" aria-label="Home" aria-current={active === "home" ? "location" : undefined}>
+          <a className="dock-tile" href="/" aria-label="Home" aria-current={active === "home" ? "page" : undefined}>
             {svg(icon.home)}{tip("Home")}
           </a>
         </li>
         {SECTIONS.map((s) => (
           <li key={s.id}>
-            <a className="dock-tile" href={`/#${s.id}`} aria-label={s.label} aria-current={active === s.id ? "location" : undefined}>
+            <a className="dock-tile" href={`/${s.id}`} aria-label={s.label} aria-current={active === s.id ? "page" : undefined}>
               {svg(icon[s.id])}{tip(s.label)}
             </a>
           </li>

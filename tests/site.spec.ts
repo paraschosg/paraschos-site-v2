@@ -1,11 +1,20 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("homepage", () => {
-  test("renders the hero and the essential sections", async ({ page }) => {
+  test("is the flip board and the dock", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Backends that stay honest under load.");
+    await expect(page.locator(".flipboard")).toBeVisible();
+    await expect(page.getByRole("navigation", { name: "Primary" })).toBeVisible();
+  });
+
+  test("dock items open their own pages", async ({ page }) => {
     for (const id of ["work", "stack", "github", "contact"]) {
+      await page.goto("/");
+      await page.getByRole("navigation", { name: "Primary" }).locator(`a[href="/${id}"]`).click();
+      await expect(page).toHaveURL(new RegExp(`/${id}$`));
       await expect(page.locator(`#${id}`)).toBeAttached();
+      await expect(page.locator(`a[href="/${id}"]`)).toHaveAttribute("aria-current", "page");
     }
   });
 
@@ -39,7 +48,9 @@ test.describe("homepage", () => {
   });
 });
 
-test.describe("terminal", () => {
+// The terminal isn't placed on any page while the section pages are being
+// redesigned; these come back when it has a home again.
+test.describe.skip("terminal", () => {
   test("runs a command and prints output", async ({ page }) => {
     await page.goto("/");
     const input = page.getByLabel("Terminal command");
@@ -85,7 +96,7 @@ test.describe("command palette", () => {
     await expect(dialog.getByRole("option")).toHaveCount(1);
     await page.keyboard.press("Enter");
     await expect(dialog).toBeHidden();
-    await expect(page).toHaveURL(/#contact$/);
+    await expect(page).toHaveURL(/\/contact$/);
   });
 
   test("closes on Escape", async ({ page }) => {
@@ -119,7 +130,7 @@ test.describe("contact form", () => {
       requests++;
       route.fulfill({ status: 200, body: "{}" });
     });
-    await page.goto("/#contact");
+    await page.goto("/contact");
     await page.getByLabel("Name").fill("A");
     await page.getByLabel("Email").fill("not-an-email");
     await page.getByLabel("Message").fill("too short");
@@ -133,7 +144,7 @@ test.describe("contact form", () => {
 
   test("shows the success state on a 200", async ({ page }) => {
     await page.route("**/api/contact", (route) => route.fulfill({ status: 200, body: '{"ok":true}' }));
-    await page.goto("/#contact");
+    await page.goto("/contact");
     await page.getByLabel("Name").fill("Test Person");
     await page.getByLabel("Email").fill("test@example.com");
     await page.getByLabel("Message").fill("This is a long enough message for the form.");
@@ -145,7 +156,7 @@ test.describe("contact form", () => {
     await page.route("**/api/contact", (route) =>
       route.fulfill({ status: 429, body: '{"error":"Too many messages in a short time."}' }),
     );
-    await page.goto("/#contact");
+    await page.goto("/contact");
     await page.getByLabel("Name").fill("Test Person");
     await page.getByLabel("Email").fill("test@example.com");
     await page.getByLabel("Message").fill("This is a long enough message for the form.");
@@ -221,24 +232,24 @@ test.describe("motion", () => {
   test("stats are the real numbers in the server HTML, not zeros", async ({ request }) => {
     // The count-up must never be what puts the figure on the page: a crawler
     // or a visitor without JavaScript has to see the true value.
-    const html = await (await request.get("/")).text();
+    const html = await (await request.get("/github")).text();
     const stats = [...html.matchAll(/<div class="gh-stat"><strong><span>(\d+)<\/span>/g)].map((m) => Number(m[1]));
     expect(stats.length).toBeGreaterThan(0);
     expect(stats.some((n) => n > 0)).toBe(true);
   });
 
   test("stats count up to the server's number once scrolled into view", async ({ page, request }) => {
-    const html = await (await request.get("/")).text();
+    const html = await (await request.get("/github")).text();
     const expected = html.match(/<div class="gh-stat"><strong><span>(\d+)<\/span>/)?.[1];
     expect(expected).toBeDefined();
 
-    await page.goto("/");
+    await page.goto("/github");
     const first = page.locator(".gh-stat strong").first();
     await first.scrollIntoViewIfNeeded();
     await expect(first).toHaveText(expected!, { timeout: 5000 });
   });
 
-  test("terminal shows a caret until it is used", async ({ page }) => {
+  test.skip("terminal shows a caret until it is used", async ({ page }) => {
     await page.goto("/");
     const row = page.locator(".term-input-row");
     await expect(row).toHaveAttribute("data-empty", "");
@@ -246,7 +257,7 @@ test.describe("motion", () => {
     await expect(row).not.toHaveAttribute("data-empty", "");
   });
 
-  test("terminal types its hint, then clears it on focus", async ({ page }) => {
+  test.skip("terminal types its hint, then clears it on focus", async ({ page }) => {
     await page.goto("/");
     const hint = page.locator(".term-hint");
     await expect(hint).toContainText("help", { timeout: 5000 });
@@ -257,7 +268,7 @@ test.describe("motion", () => {
   test("underlines are as wide as the text, not the column", async ({ page }) => {
     // .link is a grid item in the contact list; without justify-items: start
     // it stretches and the underline runs the full column width.
-    await page.goto("/#contact");
+    await page.goto("/contact");
     const link = page.locator(".contact-links a.link").last();
     const box = await link.boundingBox();
     const column = await page.locator(".contact-links").boundingBox();
@@ -265,7 +276,7 @@ test.describe("motion", () => {
   });
 
   test("underline is hidden at rest and wipes in on hover", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/contact");
     const link = page.locator(".contact-links a.link").first();
     await link.scrollIntoViewIfNeeded();
     // scaleX lives in the first value of the transform matrix: 0 hidden, 1 drawn.

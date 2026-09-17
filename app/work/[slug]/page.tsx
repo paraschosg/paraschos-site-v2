@@ -44,7 +44,7 @@ export default async function ProjectPage({ params }: { params: Promise<Params> 
       <Header />
       <main id="main" className="section">
         <article className="wrap project-page">
-          <Link href="/#work" className="link muted back">← All work</Link>
+          <Link href="/work" className="link muted back">← All work</Link>
 
           <header className="project-page-head">
             <p className="project-page-meta">

@@ -190,6 +190,46 @@ h3 {
   transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
 }
 .brand:hover .brand-dot { transform: scale(1.35) rotate(90deg); }
+/* ---------- landing: split-flap board ---------- */
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.landing {
+  min-height: 100vh; min-height: 100svh;
+  display: grid; place-items: center;
+  padding: 2rem clamp(1rem, 4vw, 3rem) 7rem;
+}
+body:has(.landing) { padding-bottom: 0; }
+.flipboard {
+  width: min(100%, 1040px);
+  padding: clamp(0.6rem, 1.6vw, 1.25rem);
+  border-radius: clamp(0.6rem, 1.4vw, 1.1rem);
+  background: #0e0e10;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), 0 30px 60px -30px rgba(0, 0, 0, 0.6);
+}
+.flipboard-grid { display: grid; gap: clamp(2px, 0.35vw, 5px); container-type: inline-size; }
+.flap {
+  position: relative; aspect-ratio: 3 / 4; perspective: 300px;
+  font-family: var(--font-mono); font-weight: 600; color: #f4f4f5;
+  font-size: calc(100cqi / var(--cols) * 0.92); line-height: 1;
+}
+/* Each half shows one half of a full-height glyph, clipped. */
+.flap-half {
+  position: absolute; left: 0; right: 0; height: 50%; overflow: hidden;
+  background: linear-gradient(180deg, #232327, #1b1b1e);
+}
+.flap-half > span { position: absolute; left: 0; right: 0; height: 200%; display: grid; place-items: center; }
+.flap-top { top: 0; border-radius: 3px 3px 0 0; transform-origin: bottom; }
+.flap-top > span { top: 0; }
+.flap-bottom { bottom: 0; border-radius: 0 0 3px 3px; transform-origin: top; background: linear-gradient(180deg, #19191c, #202024); }
+.flap-bottom > span { bottom: 0; }
+/* The hinge line across the middle of every tile. */
+.flap::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; margin-top: -0.5px; background: rgba(0, 0, 0, 0.85); z-index: 3; }
+.flap-leaves { position: absolute; inset: 0; z-index: 2; }
+.flap-fall { animation: flap-fall 55ms ease-in forwards; backface-visibility: hidden; }
+.flap-rise { transform: rotateX(90deg); animation: flap-rise 55ms 55ms ease-out forwards; backface-visibility: hidden; }
+@keyframes flap-fall { to { transform: rotateX(-90deg); } }
+@keyframes flap-rise { to { transform: rotateX(0deg); } }
+@media (prefers-reduced-motion: reduce) { .flap-leaves { display: none; } }
+
 /* ---------- dock ---------- */
 /* Dark in both themes, like a macOS dock sitting over the page. */
 .dock {
