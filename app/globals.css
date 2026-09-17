@@ -232,57 +232,80 @@ body:has(.landing) { padding-bottom: 0; }
 
 /* ---------- dock ---------- */
 /* Dark in both themes, like a macOS dock sitting over the page. */
-/* Page transitions: the dock is its own layer, so it stays put while the page
-   behind it fades and rises. The animation is set from script per click. */
+/* Page transitions: the switch panel is its own layer, so it stays put while
+   the page behind it fades and rises. The animation is set from script. */
 ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
-::view-transition-group(dock) { animation: none; }
-::view-transition-image-pair(dock) { isolation: auto; }
-::view-transition-old(dock) { display: none; }
-::view-transition-new(dock) { animation: none; }
+::view-transition-group(panel) { animation: none; }
+::view-transition-image-pair(panel) { isolation: auto; }
+::view-transition-old(panel) { display: none; }
+::view-transition-new(panel) { animation: none; }
 
-.dock {
-  view-transition-name: dock;
+/* ---------- switch panel ---------- */
+/* A console of physical switches: one per page, plus search and theme. */
+.panel {
+  view-transition-name: panel;
   position: fixed; left: 50%; bottom: 1rem; z-index: 60; translate: -50% 0;
+  max-width: calc(100vw - 1.5rem);
 }
-.dock ul {
-  display: flex; align-items: flex-end; column-gap: 0.5rem;
-  margin: 0; padding: 0.55rem; list-style: none;
-  border-radius: 1.4rem;
-  background: rgba(22, 22, 25, 0.82);
-  backdrop-filter: blur(16px) saturate(140%);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09), 0 20px 45px -18px rgba(0, 0, 0, 0.55);
+.panel ul {
+  display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;
+  gap: 0.35rem clamp(0.35rem, 1.4vw, 0.9rem);
+  margin: 0; padding: 0.85rem clamp(0.75rem, 2vw, 1.25rem) 0.7rem; list-style: none;
+  border-radius: 0.8rem;
+  background: linear-gradient(180deg, #2c2c31, #1e1e22);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.12),
+              0 18px 36px -20px rgba(0, 0, 0, 0.65);
 }
-.dock-tile {
-  --size: 48px;
-  position: relative; display: grid; place-items: center;
-  width: var(--size); height: var(--size); padding: 0;
-  border: 0; border-radius: calc(var(--size) * 0.29);
-  background: linear-gradient(180deg, #34343a 0%, #1d1d21 100%);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 4px 10px -4px rgba(0, 0, 0, 0.6);
-  color: #f4f4f5; cursor: pointer; text-decoration: none;
+.panel-sep { width: 1px; align-self: stretch; margin: 0.15rem 0.3rem; background: rgba(255, 255, 255, 0.12); }
+
+.sw {
+  display: grid; justify-items: center; gap: 0.45rem;
+  border: 0; background: none; padding: 0; cursor: pointer; text-decoration: none;
+  color: #c9c9d0; font-size: 0.68rem; letter-spacing: 0.03em;
 }
-.dock-tile svg { width: 52%; height: 52%; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
-.dock-tile[aria-current]::after {
-  content: ""; position: absolute; left: 50%; bottom: -0.42rem; width: 4px; height: 4px; margin-left: -2px;
-  border-radius: 50%; background: #e4e4e7;
+.sw-slot {
+  position: relative; width: 2rem; height: 3.1rem; border-radius: 0.35rem; background: #131316;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07), inset 0 2px 5px rgba(0, 0, 0, 0.6);
 }
-.dock-tile:focus-visible { outline: 2px solid var(--pop); outline-offset: 3px; }
-.dock-sep { align-self: stretch; width: 1px; margin-block: 0.35rem; background: rgba(255, 255, 255, 0.12); }
-.dock-tip {
-  position: absolute; left: 50%; bottom: calc(100% + 0.65rem); translate: -50% 4px;
-  padding: 0.28rem 0.6rem; border-radius: 0.45rem; white-space: nowrap; pointer-events: none;
-  background: rgba(22, 22, 25, 0.92); color: #f4f4f5; font-size: 0.8rem;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
-  opacity: 0; transition: opacity 0.15s, translate 0.15s;
+.sw-lever {
+  position: absolute; left: 50%; top: 0.25rem; width: 1.25rem; height: 1.7rem; margin-left: -0.625rem;
+  border-radius: 0.25rem;
+  background: linear-gradient(180deg, #ececef, #a8a8b1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5), inset 0 -2px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.22s cubic-bezier(.3, 1.4, .6, 1), background 0.22s;
 }
-.dock-tile:hover .dock-tip, .dock-tile:focus-visible .dock-tip { opacity: 1; translate: -50% 0; }
-/* Room at the end of every page so the dock never covers the last line. */
-body { padding-bottom: 6rem; }
-@media (max-width: 480px) {
-  .dock ul { column-gap: 0.3rem; padding: 0.4rem; border-radius: 1.1rem; }
-  .dock-tile { --size: 38px; }
+.sw[aria-current] .sw-lever, .sw:active .sw-lever {
+  transform: translateY(0.95rem);
+  background: linear-gradient(180deg, #bcbcc4, #8b8b94);
 }
-@media (prefers-reduced-motion: reduce) { .dock-tip { transition: none; } }
+.sw-led {
+  position: absolute; left: 50%; bottom: 0.3rem; width: 0.34rem; height: 0.34rem; margin-left: -0.17rem;
+  border-radius: 50%; background: #3a3a40; transition: background 0.2s, box-shadow 0.2s;
+}
+.sw-led[data-on] { background: #5fd98c; box-shadow: 0 0 7px #5fd98c; }
+/* Search is a momentary push button rather than a switch. */
+.sw-button {
+  position: absolute; left: 50%; top: 50%; width: 1.5rem; height: 1.5rem; margin: -0.75rem 0 0 -0.75rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, #f0f0f3, #9b9ba4);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
+  transition: transform 0.12s;
+}
+.sw-push:active .sw-button { transform: scale(0.92) translateY(1px); }
+.sw:hover { color: #fff; }
+.sw:focus-visible { outline: 2px solid #7aa2ff; outline-offset: 4px; border-radius: 0.3rem; }
+
+/* Room at the end of every page so the panel never covers the last line. */
+body { padding-bottom: 8rem; }
+@media (max-width: 560px) {
+  .panel ul { padding: 0.6rem 0.7rem 0.5rem; }
+  .sw-slot { width: 1.7rem; height: 2.5rem; }
+  .sw-lever { height: 1.35rem; width: 1.05rem; margin-left: -0.525rem; }
+  .sw[aria-current] .sw-lever, .sw:active .sw-lever { transform: translateY(0.75rem); }
+  .sw { font-size: 0.6rem; }
+}
+@media (prefers-reduced-motion: reduce) { .sw-lever, .sw-button { transition: none; } }
+
 .kbd {
   font-family: var(--font-mono);
   font-size: 0.72rem;

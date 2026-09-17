@@ -1,4 +1,4 @@
-import Dock from "./Dock";
+import SwitchPanel from "./SwitchPanel";
 
 export default function Header() {
   return (
@@ -11,7 +11,7 @@ export default function Header() {
           </a>
         </div>
       </header>
-      <Dock />
+      <SwitchPanel />
     </>
   );
 }
