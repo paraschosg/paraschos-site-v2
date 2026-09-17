@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { markArrived, zoomTo } from "./dockTransition";
 import { applyTheme, currentTheme } from "./ThemeToggle";
 
 // Stroke icons on a 24px grid.
@@ -32,9 +33,21 @@ const REACH = 120;    // px either side where the pull fades out
 // and settle. Touch screens and reduced motion get the dock at rest.
 export default function Dock() {
   const pathname = usePathname();
+  const router = useRouter();
   const listRef = useRef<HTMLUListElement>(null);
   const active = pathname === "/" ? "home" : SECTIONS.find((sec) => pathname.startsWith(`/${sec.id}`))?.id ?? null;
   const [theme, setTheme] = useState<"light" | "dark" | null>(null);
+
+  // A page transition started on the previous page waits for this.
+  useEffect(() => { markArrived(); }, [pathname]);
+
+  // Plain left-clicks zoom into the page; new-tab clicks behave as usual.
+  const open = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    if (href === pathname) return;
+    zoomTo(href, e.currentTarget, (h) => router.push(h));
+  };
 
   useEffect(() => {
     setTheme(currentTheme());
@@ -100,13 +113,13 @@ export default function Dock() {
     <nav className="dock" aria-label="Primary">
       <ul ref={listRef}>
         <li>
-          <a className="dock-tile" href="/" aria-label="Home" aria-current={active === "home" ? "page" : undefined}>
+          <a className="dock-tile" href="/" onClick={(e) => open(e, "/")} aria-label="Home" aria-current={active === "home" ? "page" : undefined}>
             {svg(icon.home)}{tip("Home")}
           </a>
         </li>
         {SECTIONS.map((s) => (
           <li key={s.id}>
-            <a className="dock-tile" href={`/${s.id}`} aria-label={s.label} aria-current={active === s.id ? "page" : undefined}>
+            <a className="dock-tile" href={`/${s.id}`} onClick={(e) => open(e, `/${s.id}`)} aria-label={s.label} aria-current={active === s.id ? "page" : undefined}>
               {svg(icon[s.id])}{tip(s.label)}
             </a>
           </li>
