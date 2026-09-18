@@ -253,21 +253,24 @@ body:has(.landing) { padding-bottom: 0; }
   backdrop-filter: blur(14px);
   box-shadow: inset 0 0 0 1px var(--line), 0 18px 36px -24px rgba(0, 0, 0, 0.45);
 }
-.metro-inner { flex: 1; min-width: 0; padding-inline: 1.1rem; }
+.metro-inner { flex: 1; min-width: 0; padding-inline: clamp(1.6rem, 4vw, 2.6rem); }
 .metro-track { position: relative; height: 4px; border-radius: 2px; background: color-mix(in srgb, var(--ink) 13%, transparent); }
 .metro-run {
   position: absolute; inset: 0; border-radius: 2px; background: var(--accent);
   transform-origin: left; transform: scaleX(var(--ridden, 0));
-  transition: transform 0.55s cubic-bezier(.4, 0, .2, 1);
+  transition: transform 0.45s cubic-bezier(.4, 0, .2, 1);
 }
 .metro-train {
   position: absolute; top: 50%; left: calc(var(--ridden, 0) * 100%);
   width: 1.25rem; height: 1.25rem; margin: -0.625rem 0 0 -0.625rem;
   border-radius: 0.35rem; background: var(--ink);
   box-shadow: 0 0 0 3px var(--bg);
-  transition: left 0.55s cubic-bezier(.4, 0, .2, 1);
+  transition: left 0.45s cubic-bezier(.4, 0, .2, 1);
 }
-.metro-stops { display: flex; justify-content: space-between; margin: -0.5rem 0 0; padding: 0; list-style: none; }
+/* Stops sit at exact fractions of the track, so the train lines up with the
+   dot instead of with the middle of a label. */
+.metro-stops { position: relative; height: 2.6rem; margin: -0.5rem 0 0; padding: 0; list-style: none; }
+.metro-stops li { position: absolute; top: 0; left: calc(var(--i) / var(--stops) * 100%); translate: -50% 0; }
 .metro-stop {
   display: grid; justify-items: center; gap: 0.5rem; text-decoration: none;
   color: var(--muted); font-size: 0.78rem; padding-top: 0.15rem;

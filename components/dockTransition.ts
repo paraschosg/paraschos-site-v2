@@ -5,6 +5,12 @@
 // compositor, so it stays smooth on large pages.
 
 let arrived: (() => void) | null = null;
+let running: Promise<void> | null = null;
+
+/** Resolves once any page transition in flight has finished. */
+export function whenSettled(): Promise<void> {
+  return running ?? Promise.resolve();
+}
 
 /** Called by the dock whenever it mounts on a page. */
 export function markArrived() {
@@ -22,6 +28,12 @@ export function pageTransition(href: string, navigate: (href: string) => void) {
     return;
   }
 
+  // One at a time: a second transition would cut the first one short.
+  if (running) {
+    navigate(href);
+    return;
+  }
+
   const transition = doc.startViewTransition(
     () =>
       new Promise<void>((resolve) => {
@@ -32,12 +44,14 @@ export function pageTransition(href: string, navigate: (href: string) => void) {
       }),
   );
 
+  running = transition.finished.then(() => { running = null; }, () => { running = null; });
+
   transition.ready.then(() => {
     const easing = "cubic-bezier(0.22, 0.8, 0.3, 1)";
 
     document.documentElement.animate(
-      { opacity: [0, 1], transform: ["translateY(14px)", "translateY(0)"] },
-      { duration: 320, easing, pseudoElement: "::view-transition-new(root)", fill: "both" },
+      { opacity: [0, 1], transform: ["translateY(18px)", "translateY(0)"] },
+      { duration: 300, easing, pseudoElement: "::view-transition-new(root)", fill: "both" },
     );
 
     document.documentElement.animate(

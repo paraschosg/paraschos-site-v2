@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { markArrived, pageTransition } from "./dockTransition";
+import { markArrived, pageTransition, whenSettled } from "./dockTransition";
 import { applyTheme, currentTheme } from "./ThemeToggle";
 
 // The menu is a metro line: every page is a stop, and the train sits at the
@@ -16,6 +16,11 @@ const STOPS = [
   { href: "/github", id: "github", label: "GitHub" },
   { href: "/contact", id: "contact", label: "Contact" },
 ] as const;
+
+// Where the train was on the page you came from, so it can ride across
+// rather than reappear at the new stop. The component remounts on every
+// navigation, so this has to live outside it.
+let lastRidden: number | null = null;
 
 export default function MetroNav() {
   const pathname = usePathname();
@@ -35,6 +40,16 @@ export default function MetroNav() {
   const at = STOPS.findIndex((s) => (s.href === "/" ? pathname === "/" : pathname.startsWith(s.href)));
   const index = at === -1 ? 0 : at;
   const ridden = index / (STOPS.length - 1);
+  const [pos, setPos] = useState(lastRidden ?? ridden);
+
+  // Start from the previous stop, then ride to this one once the page
+  // transition has finished — during it the menu is a frozen snapshot.
+  useEffect(() => {
+    let frame = 0;
+    whenSettled().then(() => { frame = requestAnimationFrame(() => setPos(ridden)); });
+    lastRidden = ridden;
+    return () => cancelAnimationFrame(frame);
+  }, [ridden]);
 
   const go = (e: React.MouseEvent<HTMLAnchorElement>, href: string, i: number) => {
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -46,7 +61,7 @@ export default function MetroNav() {
   const next = theme === "dark" ? "light" : "dark";
 
   return (
-    <nav className="metro" aria-label="Primary" style={{ "--ridden": ridden } as React.CSSProperties}>
+    <nav className="metro" aria-label="Primary" style={{ "--ridden": pos, "--stops": STOPS.length - 1 } as React.CSSProperties}>
       <div className="metro-inner">
         <div className="metro-track" aria-hidden="true">
           <span className="metro-run" />
@@ -54,7 +69,7 @@ export default function MetroNav() {
         </div>
         <ol className="metro-stops">
           {STOPS.map((s, i) => (
-            <li key={s.id}>
+            <li key={s.id} style={{ "--i": i } as React.CSSProperties}>
               <a
                 className="metro-stop"
                 href={s.href}
