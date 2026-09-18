@@ -4,6 +4,18 @@ All notable changes to this site are recorded here. The file is maintained by
 [release-please](https://github.com/googleapis/release-please) from commit
 messages; entries below the first release heading were written by hand.
 
+## [2.8.0](https://github.com/paraschosg/paraschos-site-v2/compare/v2.7.0...v2.8.0) (2026-09-18)
+
+
+### Features
+
+* **nav:** metro-line menu replaces the switch panel ([2170e8d](https://github.com/paraschosg/paraschos-site-v2/commit/2170e8d57cfb38b6f725139a82556b2ef76c76fc))
+
+
+### Fixes
+
+* **nav:** line up the train with its stop and let it ride ([898de5e](https://github.com/paraschosg/paraschos-site-v2/commit/898de5e9e20e0e964b399ff3334c93f060ec3cc9))
+
 ## [2.7.0](https://github.com/paraschosg/paraschos-site-v2/compare/v2.6.0...v2.7.0) (2026-09-17)
 
 
