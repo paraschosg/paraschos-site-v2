@@ -232,79 +232,75 @@ body:has(.landing) { padding-bottom: 0; }
 
 /* ---------- dock ---------- */
 /* Dark in both themes, like a macOS dock sitting over the page. */
-/* Page transitions: the switch panel is its own layer, so it stays put while
-   the page behind it fades and rises. The animation is set from script. */
+/* Page transitions: the line is its own layer, so it stays put while the page
+   behind it fades and rises. The animation is set from script. */
 ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
-::view-transition-group(panel) { animation: none; }
-::view-transition-image-pair(panel) { isolation: auto; }
-::view-transition-old(panel) { display: none; }
-::view-transition-new(panel) { animation: none; }
+::view-transition-group(metro) { animation: none; }
+::view-transition-image-pair(metro) { isolation: auto; }
+::view-transition-old(metro) { display: none; }
+::view-transition-new(metro) { animation: none; }
 
-/* ---------- switch panel ---------- */
-/* A console of physical switches: one per page, plus search and theme. */
-.panel {
-  view-transition-name: panel;
+/* ---------- metro line menu ---------- */
+/* Pages are stops on a line; the train sits at the page you're reading. */
+.metro {
+  view-transition-name: metro;
   position: fixed; left: 50%; bottom: 1rem; z-index: 60; translate: -50% 0;
-  max-width: calc(100vw - 1.5rem);
+  display: flex; align-items: center; gap: clamp(0.5rem, 2vw, 1.25rem);
+  width: min(46rem, calc(100vw - 1.5rem));
+  padding: 0.9rem clamp(0.9rem, 2.5vw, 1.4rem) 0.7rem;
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: blur(14px);
+  box-shadow: inset 0 0 0 1px var(--line), 0 18px 36px -24px rgba(0, 0, 0, 0.45);
 }
-.panel ul {
-  display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;
-  gap: 0.35rem clamp(0.35rem, 1.4vw, 0.9rem);
-  margin: 0; padding: 0.85rem clamp(0.75rem, 2vw, 1.25rem) 0.7rem; list-style: none;
-  border-radius: 0.8rem;
-  background: linear-gradient(180deg, #2c2c31, #1e1e22);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.12),
-              0 18px 36px -20px rgba(0, 0, 0, 0.65);
+.metro-inner { flex: 1; min-width: 0; padding-inline: 1.1rem; }
+.metro-track { position: relative; height: 4px; border-radius: 2px; background: color-mix(in srgb, var(--ink) 13%, transparent); }
+.metro-run {
+  position: absolute; inset: 0; border-radius: 2px; background: var(--accent);
+  transform-origin: left; transform: scaleX(var(--ridden, 0));
+  transition: transform 0.55s cubic-bezier(.4, 0, .2, 1);
 }
-.panel-sep { width: 1px; align-self: stretch; margin: 0.15rem 0.3rem; background: rgba(255, 255, 255, 0.12); }
+.metro-train {
+  position: absolute; top: 50%; left: calc(var(--ridden, 0) * 100%);
+  width: 1.25rem; height: 1.25rem; margin: -0.625rem 0 0 -0.625rem;
+  border-radius: 0.35rem; background: var(--ink);
+  box-shadow: 0 0 0 3px var(--bg);
+  transition: left 0.55s cubic-bezier(.4, 0, .2, 1);
+}
+.metro-stops { display: flex; justify-content: space-between; margin: -0.5rem 0 0; padding: 0; list-style: none; }
+.metro-stop {
+  display: grid; justify-items: center; gap: 0.5rem; text-decoration: none;
+  color: var(--muted); font-size: 0.78rem; padding-top: 0.15rem;
+  transition: color 0.2s;
+}
+.metro-dot {
+  width: 0.85rem; height: 0.85rem; border-radius: 50%; background: var(--bg);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ink) 35%, transparent);
+  transition: box-shadow 0.25s, transform 0.25s cubic-bezier(.3, 1.4, .6, 1);
+}
+.metro-stop:hover { color: var(--ink); }
+.metro-stop:hover .metro-dot { transform: scale(1.15); }
+.metro-stop[aria-current] { color: var(--ink); font-weight: 600; }
+.metro-stop[aria-current] .metro-dot { box-shadow: inset 0 0 0 3px var(--accent); transform: scale(1.1); }
+.metro-stop:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 0.3rem; }
 
-.sw {
-  display: grid; justify-items: center; gap: 0.45rem;
-  border: 0; background: none; padding: 0; cursor: pointer; text-decoration: none;
-  color: #c9c9d0; font-size: 0.68rem; letter-spacing: 0.03em;
+.metro-tools { display: flex; gap: 0.15rem; padding-left: clamp(0.25rem, 1.5vw, 0.75rem); border-left: 1px solid var(--line); }
+.metro-tools button {
+  display: grid; place-items: center; width: 2.1rem; height: 2.1rem;
+  border: 0; border-radius: 0.5rem; background: none; color: var(--muted); cursor: pointer;
 }
-.sw-slot {
-  position: relative; width: 2rem; height: 3.1rem; border-radius: 0.35rem; background: #131316;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07), inset 0 2px 5px rgba(0, 0, 0, 0.6);
-}
-.sw-lever {
-  position: absolute; left: 50%; top: 0.25rem; width: 1.25rem; height: 1.7rem; margin-left: -0.625rem;
-  border-radius: 0.25rem;
-  background: linear-gradient(180deg, #ececef, #a8a8b1);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5), inset 0 -2px 3px rgba(0, 0, 0, 0.25);
-  transition: transform 0.22s cubic-bezier(.3, 1.4, .6, 1), background 0.22s;
-}
-.sw[aria-current] .sw-lever, .sw:active .sw-lever {
-  transform: translateY(0.95rem);
-  background: linear-gradient(180deg, #bcbcc4, #8b8b94);
-}
-.sw-led {
-  position: absolute; left: 50%; bottom: 0.3rem; width: 0.34rem; height: 0.34rem; margin-left: -0.17rem;
-  border-radius: 50%; background: #3a3a40; transition: background 0.2s, box-shadow 0.2s;
-}
-.sw-led[data-on] { background: #5fd98c; box-shadow: 0 0 7px #5fd98c; }
-/* Search is a momentary push button rather than a switch. */
-.sw-button {
-  position: absolute; left: 50%; top: 50%; width: 1.5rem; height: 1.5rem; margin: -0.75rem 0 0 -0.75rem;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 35%, #f0f0f3, #9b9ba4);
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
-  transition: transform 0.12s;
-}
-.sw-push:active .sw-button { transform: scale(0.92) translateY(1px); }
-.sw:hover { color: #fff; }
-.sw:focus-visible { outline: 2px solid #7aa2ff; outline-offset: 4px; border-radius: 0.3rem; }
+.metro-tools button:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 7%, transparent); }
+.metro-tools svg { width: 1.05rem; height: 1.05rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
-/* Room at the end of every page so the panel never covers the last line. */
-body { padding-bottom: 8rem; }
+/* Room at the end of every page so the line never covers the last line of text. */
+body { padding-bottom: 7rem; }
 @media (max-width: 560px) {
-  .panel ul { padding: 0.6rem 0.7rem 0.5rem; }
-  .sw-slot { width: 1.7rem; height: 2.5rem; }
-  .sw-lever { height: 1.35rem; width: 1.05rem; margin-left: -0.525rem; }
-  .sw[aria-current] .sw-lever, .sw:active .sw-lever { transform: translateY(0.75rem); }
-  .sw { font-size: 0.6rem; }
+  .metro { padding: 0.75rem 0.6rem 0.55rem; gap: 0.35rem; }
+  .metro-inner { padding-inline: 0.5rem; }
+  .metro-stop { font-size: 0.65rem; gap: 0.4rem; }
+  .metro-tools button { width: 1.9rem; height: 1.9rem; }
 }
-@media (prefers-reduced-motion: reduce) { .sw-lever, .sw-button { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .metro-run, .metro-train, .metro-dot { transition: none; } }
 
 .kbd {
   font-family: var(--font-mono);

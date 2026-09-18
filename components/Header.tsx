@@ -1,4 +1,4 @@
-import SwitchPanel from "./SwitchPanel";
+import MetroNav from "./MetroNav";
 
 export default function Header() {
   return (
@@ -11,7 +11,7 @@ export default function Header() {
           </a>
         </div>
       </header>
-      <SwitchPanel />
+      <MetroNav />
     </>
   );
 }
