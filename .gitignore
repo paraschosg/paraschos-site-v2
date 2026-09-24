@@ -1,10 +1,4 @@
-node_modules
-.next
-out
-.env*.local
+.DS_Store
+Thumbs.db
 .vercel
-*.tsbuildinfo
-next-env.d.ts
-.idea
-test-results
-playwright-report
+.claude/

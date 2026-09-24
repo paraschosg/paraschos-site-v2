@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>George Paraschos — Portfolio</title>
+  <meta name="description" content="George Paraschos — software engineer in Athens. Backend systems, on-device computer vision and privacy-minded tools." />
+  <meta property="og:title" content="George Paraschos — Portfolio" />
+  <meta property="og:description" content="Software engineer in Athens. Backend systems, on-device computer vision and privacy-minded tools." />
+  <meta property="og:url" content="https://paraschos.site" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#063278" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter+Tight:ital,wght@0,400;0,500;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+  </script>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- ================= Header (dashed frame) ================= -->
+  <header class="bar">
+    <a href="#/" class="logo" data-route="index" aria-label="Home">GP<sup>™</sup></a>
+    <div class="bar-meta mono">
+      <span>Last updated 2026</span>
+      <span id="date">DD/MM/YY</span>
+    </div>
+    <nav class="nav mono" aria-label="Main">
+      <a href="#/" data-route="index"><i>00</i><span data-scramble>Index</span></a>
+      <a href="#/work" data-route="work"><i>01</i><span data-scramble>Work</span></a>
+      <a href="#/about" data-route="about"><i>02</i><span data-scramble>About</span></a>
+      <a href="#/contact" data-route="contact"><i>03</i><span data-scramble>Contact</span></a>
+    </nav>
+    <div class="bar-right mono">
+      <span id="clock">HH:MM</span>
+      <span id="page-code">[ GP_INDEX ]</span>
+    </div>
+  </header>
+
+  <main class="stage">
+    <!-- ================= 00 — INDEX (landing) ================= -->
+    <section class="view view-index" data-view="index" aria-label="Index">
+      <canvas id="cloth" aria-label="Interactive 3D fabric — drag to pull it"></canvas>
+
+      <div class="row mono index-top a">
+        <span>GP. Portfolio</span><span class="leader"></span><span>S/26</span><span class="leader"></span><span>V. 003</span>
+      </div>
+
+      <div class="index-bottom">
+        <p class="mono hint a"><span class="blink">●</span> <span id="hint">[ Grab &amp; pull the fabric ]</span></p>
+        <a href="#/work" class="enter a" data-route="work"><span data-scramble>Enter</span> <b>↗</b></a>
+      </div>
+    </section>
+
+    <!-- ================= 01 — WORK ================= -->
+    <section class="view view-work" data-view="work" aria-label="Work">
+      <div class="view-head">
+        <h1 class="giant" data-split>Work</h1>
+        <div class="head-meta mono a">
+          <div class="row"><span>(03) Projects</span><span class="leader"></span><span>2025 — 2026</span></div>
+          <div class="row"><span>Select a project</span><span class="leader"></span><span>↓</span></div>
+        </div>
+      </div>
+
+      <div class="work-grid">
+        <ol class="plist" id="plist"></ol>
+
+        <article class="preview a" aria-live="polite">
+          <div class="screen" id="screen">
+            <div class="screen-noise"></div>
+            <div class="screen-top mono"><span><span class="rec">●</span> REC</span><span id="screen-idx">001 / 003</span></div>
+            <div class="screen-icon" id="screen-icon"></div>
+            <div class="screen-bottom mono"><span id="screen-cat">DESKTOP APP</span><span id="tc">TC 00:00:00:00</span></div>
+          </div>
+          <div class="preview-body">
+            <div class="row mono"><span id="p-kicker">Project 001</span><span class="leader"></span><span id="p-year">2025</span></div>
+            <h2 id="p-title" data-scramble>Image Inspector</h2>
+            <p id="p-desc"></p>
+            <ul class="hl mono" id="p-hl"></ul>
+            <div class="preview-foot">
+              <ul class="tags mono" id="p-stack"></ul>
+              <a class="link mono" id="p-link" href="#" target="_blank" rel="noopener">GitHub ↗</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ================= 02 — ABOUT ================= -->
+    <section class="view view-about" data-view="about" aria-label="About">
+      <div class="view-head">
+        <h1 class="giant" data-split>About</h1>
+        <div class="head-meta mono a">
+          <div class="row"><span>Curriculum vitae</span><span class="leader"></span><span>Short ver.</span></div>
+          <div class="row"><span>Status</span><span class="leader"></span><span><i class="dot"></i> Open to work</span></div>
+        </div>
+      </div>
+
+      <div class="about-grid">
+        <div class="col a">
+          <p class="statement">“I build backend systems that stay <mark>honest under load</mark> — and tools that can see.”</p>
+          <p class="bio">Software engineer based in Athens. I'm finishing my degree in Information &amp; Communication Systems Engineering at the University of the Aegean and work part-time as a software developer at Talent. I like domain models that enforce their own rules, on-device computer vision and tools that respect privacy.</p>
+          <a href="https://www.linkedin.com/in/georgios-paraschos-1a366521b/" class="btn" target="_blank" rel="noopener"><span data-scramble>Full CV on LinkedIn</span> <b>↗</b></a>
+          <div class="skills theory"><div><h4 class="mono">Theory I actually use</h4><ul class="tags mono"><li>Distributed systems</li><li>Concurrency</li><li>Cryptography</li></ul></div></div>
+        </div>
+
+        <div class="col a">
+          <h3 class="mono label">Experience</h3>
+          <ul class="cv mono">
+            <li><span>Apr 2026 — Now</span><span class="leader"></span><span>Developer @ Talent</span></li>
+          </ul>
+          <h3 class="mono label">Education</h3>
+          <ul class="cv mono">
+            <li><span>Final year</span><span class="leader"></span><span>ICSE @ Univ. of the Aegean</span></li>
+          </ul>
+          <h3 class="mono label">Now</h3>
+          <ul class="cv mono">
+            <li><span>Building</span><span class="leader"></span><span>Android permission auditor</span></li>
+            <li><span>Building</span><span class="leader"></span><span>GDPR cookie scanner</span></li>
+            <li><span>Learning</span><span class="leader"></span><span>System design</span></li>
+          </ul>
+        </div>
+
+        <div class="col a">
+          <h3 class="mono label">Skills</h3>
+          <div class="skills">
+            <div><h4 class="mono">Languages</h4><ul class="tags mono"><li>Java</li><li>Python</li><li>TypeScript</li><li>JavaScript</li><li>SQL</li><li>Bash</li></ul></div>
+            <div><h4 class="mono">Backend &amp; Data</h4><ul class="tags mono"><li>Spring Boot</li><li>Spring Data JPA</li><li>Hibernate</li><li>Node.js</li><li>Express</li><li>MySQL</li><li>PostgreSQL</li><li>Supabase</li></ul></div>
+            <div><h4 class="mono">Tools &amp; Vision</h4><ul class="tags mono"><li>Git</li><li>Docker</li><li>Linux</li><li>IntelliJ IDEA</li><li>Vercel</li><li>Railway</li><li>MediaPipe</li><li>Pillow</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ticker a" aria-hidden="true"><div class="ticker-track"></div></div>
+    </section>
+
+    <!-- ================= 03 — CONTACT ================= -->
+    <section class="view view-contact" data-view="contact" aria-label="Contact">
+      <div class="view-head">
+        <h1 class="giant" data-split>Contact</h1>
+        <div class="head-meta mono a">
+          <div class="row"><span>Based in</span><span class="leader"></span><span>Athens, GR</span></div>
+          <div class="row"><span>Status</span><span class="leader"></span><span><i class="dot"></i> Available</span></div>
+        </div>
+      </div>
+
+      <div class="contact-grid">
+        <form class="form a" id="contact-form" novalidate>
+          <label class="field">
+            <span class="mono">01 — Name</span>
+            <input name="name" type="text" required autocomplete="name" placeholder="Jane Doe" />
+          </label>
+          <label class="field">
+            <span class="mono">02 — Email</span>
+            <input name="email" type="email" required autocomplete="email" placeholder="jane@company.com" />
+          </label>
+          <label class="field">
+            <span class="mono">03 — Message</span>
+            <textarea name="message" rows="3" required placeholder="Tell me about your project…"></textarea>
+          </label>
+          <div class="form-foot">
+            <button type="submit" class="btn btn-blue"><span data-scramble>Send message</span> <b>→</b></button>
+            <p class="form-status mono" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+
+        <div class="contact-side a">
+          <p class="statement">“Have a project, a role or an idea? <mark>Let's talk.</mark>”</p>
+          <ul class="cv mono socials">
+            <li><a href="mailto:george@paraschos.site" id="mail-link"><span>Email</span><span class="leader"></span><span>george@paraschos.site ↗</span></a></li>
+            <li><a href="https://github.com/paraschosg" target="_blank" rel="noopener"><span>GitHub</span><span class="leader"></span><span>@paraschosg ↗</span></a></li>
+            <li><a href="https://www.linkedin.com/in/georgios-paraschos-1a366521b/" target="_blank" rel="noopener"><span>LinkedIn</span><span class="leader"></span><span>Georgios Paraschos ↗</span></a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot mono">
+    <span>© 2026 George Paraschos</span><span class="leader"></span><span id="page-num">Page 00 / 03</span><span class="leader"></span><span>All rights reserved™</span>
+  </footer>
+
+  <!-- ================= Page transition: CRT channel switch ================= -->
+  <div class="tv" aria-hidden="true">
+    <canvas class="tv-noise" width="160" height="90"></canvas>
+    <div class="tv-scan"></div>
+    <div class="tv-content">
+      <div class="row mono"><span>CH-<b id="tv-ch">00</b></span><span class="leader"></span><span>GP. Broadcast</span><span class="leader"></span><span id="tv-sig">Signal ▮▮▮▯</span></div>
+      <div class="tv-title" id="tv-title">INDEX</div>
+      <div class="row mono"><span>Tuning</span><span class="leader"></span><span id="tv-pct">000%</span></div>
+    </div>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
