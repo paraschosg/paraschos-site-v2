@@ -28,7 +28,8 @@ The site needs a local server because ES modules don't load from `file://`. Ther
 
 ## Edit
 
-- `js/data.js`: all the content (projects, stats, player card, dialogue, skills, quests, ticker, links). Set `formEndpoint` to a Formspree URL to send the form without opening a mail app.
+- `js/data.js`: all the content (projects, stats, player card, dialogue, skills, quests, ticker, links).
+- `api/contact.js`: the contact form endpoint, a Vercel function that sends the message through [Resend](https://resend.com) from `contact@paraschos.site`, with `reply-to` set to the visitor. It needs `RESEND_API_KEY` and `CONTACT_TO` in the Vercel project's environment variables. With the local Python server the endpoint doesn't exist, so the form shows an error there; `vercel dev` runs it.
 - `js/avatar.js`: the 3D George (`AVATAR` colours at the top) and the cat.
 - `js/props.js`: the other 3D objects and the colour palette (`PALETTE`).
 - `js/stage.js`: one WebGL canvas that renders many small 3D scenes onto page elements.

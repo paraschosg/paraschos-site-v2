@@ -367,10 +367,11 @@ setInterval(tick, 15000);
       const res = await fetch(CONFIG.formEndpoint, {
         method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error(res.statusText);
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || res.statusText);
       f.reset(); say('MESSAGE SENT. +100 XP', 'ok'); Sound.start();
-    } catch {
-      say(`CONNECTION LOST. EMAIL ${CONFIG.email.toUpperCase()}`, 'err');
+    } catch (err) {
+      Sound.back();
+      say(`${/^[A-Z .]+$/.test(err.message) ? err.message : 'CONNECTION LOST.'} EMAIL ${CONFIG.email.toUpperCase()}`, 'err');
     } finally { btn.disabled = false; }
   });
   f.addEventListener('input', e => e.target.closest('.field')?.classList.remove('bad'));
