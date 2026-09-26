@@ -85,9 +85,9 @@ class View {
     const s = this.scene = new THREE.Scene();
     s.environment = stage.env;
     s.environmentIntensity = 0.45;
-    s.add(new THREE.HemisphereLight(0xffffff, 0x5e3a4c, 0.8));
+    s.add(new THREE.HemisphereLight(0xffffff, 0x4d4545, 0.8));
     const key = new THREE.DirectionalLight(0xfff3e6, 2.1); key.position.set(2.5, 5, 3.5);
-    const rim = new THREE.DirectionalLight(0xffd9ea, 1.6); rim.position.set(-3.5, 2.5, -4);
+    const rim = new THREE.DirectionalLight(0xffeee6, 1.6); rim.position.set(-3.5, 2.5, -4);
     const fill = new THREE.DirectionalLight(0xffffff, 0.35); fill.position.set(-3, 1, 3);
     s.add(key, rim, fill);
 

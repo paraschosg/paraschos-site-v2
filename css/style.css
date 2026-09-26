@@ -1,16 +1,16 @@
-/* George Paraschos — console / CRT portfolio. Raspberry plastic, pale CRT glass, raspberry/paper checkerboard. */
+/* George Paraschos — console / CRT portfolio. Grey plastic TV, pale CRT glass, burgundy (#38070e) details. */
 :root {
-  --bezel: #ab2c6a;
-  --bezel-hi: #d05792;
-  --bezel-lo: #6a1540;
+  --bezel: #a3a39e;
+  --bezel-hi: #cfcfca;
+  --bezel-lo: #6f6f6b;
   --screen: #e4e5e0;
   --screen-2: #d6d8d1;
   --screen-3: #c3c6bd;
   --ink: #111216;
-  --ink-2: #5a4852;
+  --ink-2: #544a4b;
   --paper: #f1efe8;
-  --accent: #ab2c6a;
-  --accent-2: #c43f82;
+  --accent: #38070e;
+  --accent-2: #5c1220;
   --gold: #d6a84a;
   --red: #d8452c;
   --green: #2fa85c;
@@ -27,7 +27,7 @@
 [hidden] { display: none !important; }
 html, body { height: 100%; margin: 0; }
 body {
-  background: #14060d;
+  background: #0f0f0f;
   color: var(--ink);
   font-family: var(--mono);
   overflow: hidden;
@@ -98,7 +98,7 @@ img { display: block; }
   border-radius: clamp(14px, 2.4vw, 32px);
   background: radial-gradient(120% 90% at 50% 40%, #eeefea 0%, var(--screen) 50%, var(--screen-2) 100%);
   box-shadow:
-    0 0 0 clamp(4px, .55vw, 7px) #1c0812,
+    0 0 0 clamp(4px, .55vw, 7px) #1b1b1b,
     0 0 0 calc(clamp(4px, .55vw, 7px) + 2px) rgba(0, 0, 0, .2),
     0 4px 0 calc(clamp(4px, .55vw, 7px) + 1px) rgba(255, 255, 255, .15);
 }
@@ -117,8 +117,8 @@ img { display: block; }
   pointer-events: none;
   border-radius: inherit;
   background:
-    repeating-linear-gradient(0deg, rgba(30, 8, 20, .06) 0 1px, transparent 1px 3px),
-    radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(40, 10, 26, .3) 100%);
+    repeating-linear-gradient(0deg, rgba(20, 20, 20, .06) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(30, 24, 24, .3) 100%);
   animation: flicker 5s infinite steps(1);
 }
 .fx::after {
@@ -136,8 +136,8 @@ img { display: block; }
   pointer-events: none;
   opacity: 0;
   background:
-    repeating-linear-gradient(0deg, transparent 0 14px, rgba(171, 44, 106, .14) 14px 16px),
-    linear-gradient(transparent 30%, rgba(228, 229, 224, .9) 30% 34%, transparent 34% 62%, rgba(171, 44, 106, .2) 62% 64%, transparent 64%);
+    repeating-linear-gradient(0deg, transparent 0 14px, rgba(56, 7, 14, .14) 14px 16px),
+    linear-gradient(transparent 30%, rgba(228, 229, 224, .9) 30% 34%, transparent 34% 62%, rgba(56, 7, 14, .2) 62% 64%, transparent 64%);
 }
 .glitch.on { animation: glitch .26s steps(4) 1; }
 @keyframes glitch {
@@ -152,7 +152,7 @@ img { display: block; }
   inset: 0;
   z-index: 30;
   pointer-events: none;
-  background: #14060d;
+  background: #0f0f0f;
   clip-path: inset(50% 0 50% 0);
 }
 .crt-on::after {
@@ -161,7 +161,7 @@ img { display: block; }
   left: 0; right: 0; top: 50%;
   height: 2px;
   background: #fff;
-  box-shadow: 0 0 18px 4px rgba(255, 205, 228, .85);
+  box-shadow: 0 0 18px 4px rgba(255, 238, 230, .85);
   opacity: 0;
 }
 .crt-on.run { animation: crtOn .7s ease-out 1 forwards; }
