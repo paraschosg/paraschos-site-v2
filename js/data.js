@@ -5,9 +5,9 @@ export const CONFIG = {
   email: 'george@paraschos.site',
   github: 'https://github.com/paraschosg',
   linkedin: 'https://www.linkedin.com/in/georgios-paraschos-1a366521b/',
-  // Formspree (https://formspree.io) endpoint, e.g. "https://formspree.io/f/abcdwxyz".
+  // Where the contact form POSTs. /api/contact is the Vercel function in api/contact.js.
   // Leave empty and the form opens the visitor's mail client instead.
-  formEndpoint: '',
+  formEndpoint: '/api/contact',
   timeZone: 'Europe/Athens',
 };
 
