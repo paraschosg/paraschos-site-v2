@@ -33,7 +33,7 @@ The site needs a local server because ES modules don't load from `file://`. Ther
 - `js/props.js`: the other 3D objects and the colour palette (`PALETTE`).
 - `js/stage.js`: one WebGL canvas that renders many small 3D scenes onto page elements.
 - `js/main.js`: the router, sounds, keyboard input, loading screen, dialogue and form.
-- `css/style.css`: all the styling. The colour tokens are in `:root` (`--accent: #ab2c6a`).
+- `css/style.css`: all the styling. The colour tokens are in `:root` (`--bezel` for the grey TV, `--accent: #38070e` for the details).
 
 ## History
 

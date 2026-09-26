@@ -5,7 +5,7 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { rng } from './noise.js';
 
 export const PALETTE = {
-  accent: '#ab2c6a', accentHi: '#c94a88', ink: '#111216', paper: '#f1efe8', screen: '#e4e5e0',
+  accent: '#38070e', accentHi: '#5c1220', ink: '#111216', paper: '#f1efe8', screen: '#e4e5e0',
   grey: '#b9bcc3', greyDark: '#80848d', gold: '#d6a84a', red: '#d8452c', green: '#34c46a',
 };
 
@@ -37,7 +37,7 @@ let shadowTex;
 export function contactShadow(size = 2.6, opacity = 0.3) {
   shadowTex ||= canvasTex(128, 128, (g, w, h) => {
     const gr = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
-    gr.addColorStop(0, 'rgba(34,10,22,1)'); gr.addColorStop(0.5, 'rgba(34,10,22,0.45)'); gr.addColorStop(1, 'rgba(34,10,22,0)');
+    gr.addColorStop(0, 'rgba(22,16,16,1)'); gr.addColorStop(0.5, 'rgba(22,16,16,0.45)'); gr.addColorStop(1, 'rgba(22,16,16,0)');
     g.fillStyle = gr; g.fillRect(0, 0, w, h);
   });
   const m = new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, opacity, depthWrite: false, toneMapped: false }));
@@ -46,7 +46,7 @@ export function contactShadow(size = 2.6, opacity = 0.3) {
   return m;
 }
 
-/* ---------- raspberry/paper checkerboard floor disc ---------- */
+/* ---------- burgundy/paper checkerboard floor disc ---------- */
 let floorMat;
 export function checkerFloor(size = 5.5) {
   floorMat ||= new THREE.MeshBasicMaterial({
@@ -265,7 +265,7 @@ export function makeEnvelope() {
   hinge.position.set(0, H / 2, 0.08);
   const flapS = new THREE.Shape();
   flapS.moveTo(-W / 2, 0); flapS.lineTo(W / 2, 0); flapS.lineTo(0, -H * 0.62); flapS.closePath();
-  const flap = new THREE.Mesh(new THREE.ExtrudeGeometry(flapS, { depth: 0.02, bevelEnabled: false }), std('#8e2255', 0.6));
+  const flap = new THREE.Mesh(new THREE.ExtrudeGeometry(flapS, { depth: 0.02, bevelEnabled: false }), std('#4d0c17', 0.6));
   hinge.add(flap);
   const seal = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.18, 0.05, 28), std(PALETTE.gold, 0.3, { metalness: 0.6 }));
   seal.rotation.x = Math.PI / 2;
@@ -317,12 +317,12 @@ export function makeInspector() {
   const root = new THREE.Group();
   const photo = canvasTex(96, 64, (g, w, h) => {
     const sky = g.createLinearGradient(0, 0, 0, h);
-    sky.addColorStop(0, '#f0bfd6'); sky.addColorStop(1, '#f7e7d4');
+    sky.addColorStop(0, '#e8c7c2'); sky.addColorStop(1, '#f6ebdf');
     g.fillStyle = sky; g.fillRect(0, 0, w, h);
     g.fillStyle = '#f6c65b'; g.fillRect(64, 10, 12, 12);
     g.fillStyle = PALETTE.accent;
     g.beginPath(); g.moveTo(0, 48); g.lineTo(22, 26); g.lineTo(40, 44); g.lineTo(58, 22); g.lineTo(96, 50); g.lineTo(96, 64); g.lineTo(0, 64); g.fill();
-    g.fillStyle = '#d0619a'; g.fillRect(0, 54, w, 10);
+    g.fillStyle = '#7a2230'; g.fillRect(0, 54, w, 10);
   }, true);
   const frame = new THREE.Mesh(new RoundedBoxGeometry(1.9, 1.35, 0.1, 2, 0.03), std(PALETTE.ink, 0.45));
   frame.position.y = 0.72;
@@ -348,7 +348,7 @@ export function makeInspector() {
   const tag = decal(canvasTex(160, 48, (g, w, h) => {
     g.fillStyle = PALETTE.ink; g.fillRect(0, 0, w, h);
     g.fillStyle = PALETTE.accent; g.fillRect(8, 10, 28, 28);
-    g.fillStyle = PALETTE.paper; g.font = `12px ${PX}`; g.fillText('#AB2C6A', 46, 30);
+    g.fillStyle = PALETTE.paper; g.font = `12px ${PX}`; g.fillText('#38070E', 46, 30);
   }, true), 0.62, 0.19);
   tag.position.set(-0.55, 1.55, 0.06);
   root.add(tag);
