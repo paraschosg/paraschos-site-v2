@@ -1,33 +1,41 @@
-# paraschos.site — v3
+# paraschos.site — v4 "GP-64"
 
 Personal portfolio of George Paraschos, live at [paraschos.site](https://paraschos.site).
 
-A single-screen, non-scrolling site with four "channels" (Index, Work, About, Contact).
+The site is a retro console with a CRT screen, in the spirit of awge.com and the KUKI concept site. It doesn't scroll: every "channel" fits on one screen.
 
-- **Index:** an interactive 3D fabric banner built with Three.js and a Verlet cloth simulation. Grab and pull it, press into it with the cursor, or click for a gust.
-- **Page transitions:** CRT "channel switch". A blue band with static opens from the centre, the page name decodes, and the picture collapses to a line and a dot.
-- **Style:** archive typography (big grotesk, typewriter labels with dotted leaders, dashed frames, grain), inspired by the Virgil Abloh Archive and AWGE.
+| Route | Screen |
+|---|---|
+| `/` | Start screen: 3D George and his tabby cat, **PRESS START** |
+| `#home` | Main menu with six spinning 3D objects |
+| `#work` | "Select game": the three projects |
+| `#work/<id>` | One project: drag to spin, tap to bounce, stats, stack and source link |
+| `#about` | "Player 1": typewriter dialogue and a character card |
+| `#skills` | "Inventory": skills as item slots |
+| `#quests` | "Side quests": what I'm working on now |
+| `#contact` | "Multiplayer": contact form and links |
 
-No build step and no dependencies to install. Three.js and the fonts load from CDNs.
+You can also navigate with the keyboard: arrows move, Enter selects, Esc goes back.
 
 ## Run locally
 
 ```bash
-python -m http.server 5173
-# open http://localhost:5173
+python -m http.server 5174
+# open http://localhost:5174
 ```
 
-ES modules need an `http://` origin, so opening `index.html` straight from disk won't work.
+The site needs a local server because ES modules don't load from `file://`. There's no build step and nothing to install. Three.js and the fonts load from CDNs.
 
-## Edit content
+## Edit
 
-- `main.js`: `CONFIG` (name, email, optional Formspree endpoint) and `PROJECTS`
-- `index.html`: About / CV / skills / contact text
-- `cloth.js`: the text printed on the fabric (`paintTexture`)
-- `style.css`: colour tokens at the top (`--blue: #063278`)
+- `js/data.js`: all the content (projects, stats, player card, dialogue, skills, quests, ticker, links). Set `formEndpoint` to a Formspree URL to send the form without opening a mail app.
+- `js/avatar.js`: the 3D George (`AVATAR` colours at the top) and the cat.
+- `js/props.js`: the other 3D objects and the colour palette (`PALETTE`).
+- `js/stage.js`: one WebGL canvas that renders many small 3D scenes onto page elements.
+- `js/main.js`: the router, sounds, keyboard input, loading screen, dialogue and form.
+- `css/style.css`: all the styling. The colour tokens are in `:root` (`--accent: #ab2c6a`).
 
-## Deploy
+## History
 
-Pushing to `main` deploys to Vercel. `vercel.json` sets the framework preset to "Other", so the files are served as-is.
-
-The previous Next.js version of the site is kept under the git tag `v2-nextjs`.
+- `v3-cloth`: the previous archive-style site with the 3D fabric banner.
+- `v2-nextjs`: the earlier Next.js site.
