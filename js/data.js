@@ -36,15 +36,19 @@ export const PROJECTS = [
     link: 'https://github.com/paraschosg/Camera-recognition',
   },
   {
-    id: 'airline',
-    obj: 'plane',
-    title: 'Airline Management System',
-    kind: 'Backend system',
-    year: '2025',
-    desc: 'Flight booking end to end, with a state machine that refuses to let a flight board twice. The flight lifecycle (Scheduled → Boarding → Departed → Arrived) is enforced in the domain layer, not the UI.',
-    stats: { backend: 5, vision: 0, ui: 2, privacy: 3 },
-    stack: ['Java', 'Spring Boot', 'Spring Data JPA', 'MySQL'],
-    link: 'https://github.com/paraschosg/airline-management-system',
+    id: 'ciphervault',
+    obj: 'vault',
+    title: 'CipherVault',
+    kind: 'Encryption app',
+    year: '2026',
+    desc: 'A desktop vault that encrypts text, files and passwords with AES-256-GCM, ChaCha20, Serpent and more. Member and admin accounts, a password vault that only your own key opens, and a 3D cipher cube that scrambles as you encrypt.',
+    stats: { backend: 4, vision: 0, ui: 5, privacy: 5 },
+    stack: ['Java 25', 'JavaFX', 'Bouncy Castle', 'SQLite'],
+    // the repo is private, so the project page shows these instead of a source link
+    shots: [
+      { src: 'img/ciphervault/sign-in.png', caption: 'SIGN IN · SPIN THE 3D CORE', alt: 'CipherVault sign-in screen with a 3D crystal core and orbiting data rings' },
+      { src: 'img/ciphervault/text.png', caption: 'TEXT · AES-256-GCM + CIPHER CUBE', alt: 'CipherVault encrypting a message with AES-256-GCM next to the 3D cipher cube' },
+    ],
   },
 ];
 
