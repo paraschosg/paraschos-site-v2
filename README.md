@@ -9,7 +9,7 @@ The site is a retro console with a CRT screen, in the spirit of awge.com and the
 | `/` | Start screen: 3D George and his tabby cat, **PRESS START** |
 | `#home` | Main menu with six spinning 3D objects |
 | `#work` | "Select game": the three projects |
-| `#work/<id>` | One project: drag to spin, tap to bounce, stats, stack and source link |
+| `#work/<id>` | One project: drag to spin, tap to bounce, stats, stack and a source link (or screenshots for private repos) |
 | `#about` | "Player 1": typewriter dialogue and a character card |
 | `#skills` | "Inventory": skills as item slots |
 | `#quests` | "Side quests": what I'm working on now |
@@ -29,6 +29,7 @@ The site needs a local server because ES modules don't load from `file://`. Ther
 ## Edit
 
 - `js/data.js`: all the content (projects, stats, player card, dialogue, skills, quests, ticker, links).
+- `img/`: screenshots for projects whose repo is private. List them in the project's `shots` in `data.js` and its page shows a SCREENSHOTS button, which opens an in-screen viewer, instead of the source link.
 - `api/contact.js`: the contact form endpoint, a Vercel function that sends the message through [Resend](https://resend.com) from `contact@paraschos.site`, with `reply-to` set to the visitor. It needs `RESEND_API_KEY` and `CONTACT_TO` in the Vercel project's environment variables. With the local Python server the endpoint doesn't exist, so the form shows an error there; `vercel dev` runs it.
 - `js/avatar.js`: the 3D George (`AVATAR` colours at the top) and the cat.
 - `js/props.js`: the other 3D objects and the colour palette (`PALETTE`).

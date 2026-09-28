@@ -1,6 +1,6 @@
 import { Stage } from './stage.js';
 import { makeGeorge, makeDuo } from './avatar.js';
-import { makeCartridge, makeKeyboard, makeChest, makeEnvelope, makeFloppy, makeInspector, makeWebcam, makePlane } from './props.js';
+import { makeCartridge, makeKeyboard, makeChest, makeEnvelope, makeFloppy, makeInspector, makeWebcam, makeVault } from './props.js';
 import { CONFIG, PROJECTS, STAT_LABELS, PLAYER, STORY, SKILLS, QUESTS, TICKER } from './data.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -93,7 +93,7 @@ const OPTS = {
   portrait: { dist: 2.35, elev: 0.02, lookY: 0.66, tilt: 0, sway: 0.15, shadow: false, bob: 0 },
   inspector: { dist: 6.0, elev: 0.25, tilt: 0, sway: 0.5, shadowSize: 3.2 },
   webcam: { dist: 6.0, elev: 0.2, tilt: 0, sway: 0.55, shadowSize: 2.4 },
-  plane: { dist: 6.6, elev: 0.3, tilt: 0, sway: 0.6, shadowSize: 3.2, bob: 0.08 },
+  vault: { dist: 5.6, elev: 0.28, tilt: 0, sway: 0.5, shadowSize: 2.8 },
 };
 const BUILD = {
   cart: () => makeCartridge(),
@@ -106,7 +106,7 @@ const BUILD = {
   portrait: () => { const g = makeGeorge(); g.userData.autoWave = false; return g; },
   inspector: () => makeInspector(),
   webcam: () => makeWebcam(),
-  plane: () => makePlane(),
+  vault: () => makeVault(),
 };
 const ALIAS = { keyboard2: 'keyboard', chest2: 'chest', envelope2: 'envelope' };
 // the big side views on inner pages sit further back than the menu tiles
@@ -213,7 +213,17 @@ function showProject(id) {
   $('#d-stats').innerHTML = STAT_LABELS.map(([k, label]) =>
     `<dt>${label}</dt><dd aria-label="${p.stats[k]} of 5">${Array.from({ length: 5 }, (_, j) => `<i class="${j < p.stats[k] ? 'on' : ''}"></i>`).join('')}</dd>`).join('');
   $('#d-stack').innerHTML = p.stack.map(s => `<li>${s}</li>`).join('');
-  $('#d-link').href = p.link;
+  // private repos get a screenshot viewer instead of a source link
+  const link = $('#d-link');
+  if (p.shots) {
+    link.href = `#work/${p.id}`;
+    link.removeAttribute('target');
+    link.textContent = 'SCREENSHOTS ▶';
+  } else {
+    link.href = p.link;
+    link.target = '_blank';
+    link.textContent = 'SOURCE CODE ↗';
+  }
   $('#d-prev').href = `#work/${PROJECTS[(i - 1 + PROJECTS.length) % PROJECTS.length].id}`;
   $('#d-next').href = `#work/${PROJECTS[(i + 1) % PROJECTS.length].id}`;
   document.title = `${p.title} — ${CONFIG.name}`;
@@ -222,6 +232,46 @@ function showProject(id) {
     detailView.sqV += 4;
   }
 }
+
+/* ---------------- screenshots viewer ---------------- */
+const Shots = {
+  el: $('#shots'), list: [], i: 0, opener: null,
+  get open() { return !this.el.hidden; },
+  show(p) {
+    this.list = p.shots; this.i = 0;
+    this.opener = document.activeElement;
+    $('#shots-title').textContent = `${p.title.toUpperCase()} · SCREENSHOTS`;
+    this.el.hidden = false;
+    this.paint();
+    $('#shots-x').focus({ preventScroll: true });
+  },
+  paint() {
+    const s = this.list[this.i], img = $('#shots-img'), many = this.list.length > 1;
+    img.src = s.src; img.alt = s.alt;
+    $('#shots-full').href = s.src;
+    $('#shots-cap').textContent = s.caption;
+    $('#shots-n').textContent = `${pad(this.i + 1)}/${pad(this.list.length)}`;
+    $('#shots-prev').hidden = $('#shots-next').hidden = !many;
+    if (many) new Image().src = this.list[(this.i + 1) % this.list.length].src; // warm up the next one
+  },
+  step(d) { this.i = (this.i + d + this.list.length) % this.list.length; this.paint(); },
+  close() {
+    if (!this.open) return;
+    this.el.hidden = true;
+    this.opener?.focus({ preventScroll: true });
+  },
+};
+$('#d-link').addEventListener('click', e => {
+  const p = PROJECTS.find(k => k.id === currentArg);
+  if (!p?.shots) return;
+  e.preventDefault();
+  Shots.show(p);
+});
+$('#shots-x').addEventListener('click', () => Shots.close());
+$('#shots-prev').addEventListener('click', () => Shots.step(-1));
+$('#shots-next').addEventListener('click', () => Shots.step(1));
+Shots.el.addEventListener('click', e => { if (e.target === Shots.el) { Sound.back(); Shots.close(); } });
+window.addEventListener('hashchange', () => Shots.close());
 
 /* ---------------- boot / start ---------------- */
 function crtOn() {
@@ -300,6 +350,17 @@ window.addEventListener('keydown', e => {
   const typingInField = e.target.closest && e.target.closest('input, textarea');
   if (typingInField && e.key !== 'Escape') return;
   usingKeys = true;
+  if (Shots.open) {
+    if (e.key === 'Escape' || e.key === 'Backspace') { e.preventDefault(); Sound.back(); Shots.close(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); Sound.move(); Shots.step(e.key === 'ArrowLeft' ? -1 : 1); }
+    else if (e.key === 'Tab') {
+      // keep focus inside the viewer
+      const f = $$('a, button', Shots.el).filter(visible), k = f.indexOf(document.activeElement);
+      e.preventDefault();
+      f[(k + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus();
+    }
+    return;
+  }
   if (current === 'boot') {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); start(); }
     return;
@@ -324,7 +385,7 @@ window.addEventListener('keydown', e => {
 document.addEventListener('click', e => {
   const a = e.target.closest('a, button');
   if (!a || a.id === 'snd' || a.id === 'press') return;
-  if (a.id === 'back') Sound.back(); else Sound.select();
+  if (a.id === 'back' || a.id === 'shots-x') Sound.back(); else Sound.select();
 });
 let lastBlip = 0;
 document.addEventListener('pointerover', e => {

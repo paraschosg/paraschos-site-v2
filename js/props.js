@@ -1,5 +1,5 @@
 // 3D props for the menus, built from primitives: cartridge, keyboard, chest, envelope,
-// floppy disk, and one model per project (magnifier + photo, webcam, plane).
+// floppy disk, and one model per project (magnifier + photo, webcam, safe).
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { rng } from './noise.js';
@@ -72,6 +72,7 @@ function centered(root, y = 0) {
   root.position.y += -(box.min.y + box.max.y) / 2 + y;
   const wrap = new THREE.Group();
   wrap.add(root);
+  wrap.userData = root.userData; // so the stage finds tick / onTap on the wrapper
   return wrap;
 }
 
@@ -416,80 +417,122 @@ export function makeWebcam() {
   return centered(root);
 }
 
-/* ---------- project: Airline Management (low-poly plane) ---------- */
-export function makePlane() {
+/* ---------- project: CipherVault (safe with a combination dial) ---------- */
+let dialTex;
+export function makeVault() {
   const root = new THREE.Group();
-  const white = std(PALETTE.paper, 0.4), livery = std(PALETTE.accent, 0.4), grey = std(PALETTE.grey, 0.35, { metalness: 0.5 });
-  const plane = new THREE.Group();
-  const fus = new THREE.Mesh(new THREE.CapsuleGeometry(0.24, 1.9, 8, 20), white);
-  fus.rotation.x = Math.PI / 2;
-  plane.add(fus);
-  const belly = new THREE.Mesh(new THREE.CapsuleGeometry(0.245, 1.7, 6, 20), livery);
-  belly.rotation.x = Math.PI / 2;
-  belly.scale.set(1, 1, 0.35);
-  belly.position.y = -0.14;
-  plane.add(belly);
-  // windows
-  const winMat = std(PALETTE.ink, 0.2);
-  for (let i = 0; i < 9; i++) for (const s of [-1, 1]) {
-    const w = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 6), winMat);
-    w.scale.set(0.4, 1, 1);
-    w.position.set(s * 0.235, 0.06, 0.7 - i * 0.16);
-    plane.add(w);
+  const shell = std(PALETTE.accent, 0.45), metal = std(PALETTE.gold, 0.3, { metalness: 0.75 }), dark = std(PALETTE.ink, 0.5);
+  const W = 1.5, H = 1.55, D = 1.15, T = 0.14, F = 0.12;
+  const y0 = F + H / 2;
+  // hollow body: back, sides, top, bottom, with a dark lining inside
+  for (const [w, h, d, x, y, z] of [
+    [W, H, T, 0, 0, -D / 2 + T / 2],
+    [T, H, D, -W / 2 + T / 2, 0, 0], [T, H, D, W / 2 - T / 2, 0, 0],
+    [W, T, D, 0, H / 2 - T / 2, 0], [W, T, D, 0, -H / 2 + T / 2, 0],
+  ]) {
+    const m = new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 2, 0.04), shell);
+    m.position.set(x, y0 + y, z);
+    root.add(m);
   }
-  const cockpit = new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 8), winMat);
-  cockpit.scale.set(1.5, 0.5, 0.8);
-  cockpit.position.set(0, 0.12, 1.1);
-  plane.add(cockpit);
-  // wings
-  const wing = new THREE.Mesh(new RoundedBoxGeometry(2.6, 0.06, 0.5, 2, 0.02), white);
-  wing.position.set(0, -0.06, 0.1);
-  plane.add(wing);
-  for (const s of [-1, 1]) {
-    const tip = new THREE.Mesh(new RoundedBoxGeometry(0.06, 0.22, 0.3, 2, 0.02), livery);
-    tip.position.set(s * 1.3, 0.05, 0.05);
-    const eng = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.09, 0.42, 16), grey);
-    eng.rotation.x = Math.PI / 2;
-    eng.position.set(s * 0.6, -0.2, 0.22);
-    plane.add(tip, eng);
+  const lining = new THREE.Mesh(new THREE.BoxGeometry(W - 2 * T, H - 2 * T, D - T), new THREE.MeshStandardMaterial({ color: '#1c0c10', roughness: 0.9, side: THREE.BackSide }));
+  lining.position.set(0, y0, T / 2);
+  root.add(lining);
+  for (const x of [-1, 1]) for (const z of [-1, 1]) {
+    const foot = new THREE.Mesh(new RoundedBoxGeometry(0.2, F, 0.2, 2, 0.03), dark);
+    foot.position.set(x * (W / 2 - 0.16), F / 2, z * (D / 2 - 0.16));
+    root.add(foot);
   }
-  const stab = new THREE.Mesh(new RoundedBoxGeometry(1.0, 0.04, 0.26, 2, 0.015), white);
-  stab.position.set(0, 0.05, -1.05);
-  plane.add(stab);
-  const fin = new THREE.Mesh(new RoundedBoxGeometry(0.05, 0.55, 0.42, 2, 0.02), livery);
-  fin.position.set(0, 0.36, -1.02);
-  fin.rotation.x = -0.35;
-  plane.add(fin);
-  for (const s of [-1, 1]) {
-    const gp = decal(canvasTex(64, 64, (g, w, h) => {
-      g.fillStyle = PALETTE.paper; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = `22px ${PX}`; g.fillText('GP', w / 2, h / 2 + 2);
-    }, true), 0.26, 0.26);
-    gp.position.set(s * 0.028, 0.38, -1.0);
-    gp.rotation.y = s * Math.PI / 2;
-    plane.add(gp);
+  // gold bars glowing inside
+  const barGeo = new RoundedBoxGeometry(0.42, 0.14, 0.24, 2, 0.03);
+  const barMat = std(PALETTE.gold, 0.25, { metalness: 0.85, emissive: '#6b4a0c', emissiveIntensity: 0.5 });
+  for (const [x, y] of [[-0.23, 0], [0.23, 0], [0, 0.14]]) {
+    const bar = new THREE.Mesh(barGeo, barMat);
+    bar.position.set(x, F + T + 0.07 + y, 0.05);
+    root.add(bar);
   }
-  root.add(plane);
-  // a few cloud puffs
-  const cloudMat = std('#ffffff', 0.95);
-  const clouds = [[-1.3, -0.5, -0.6, 0.9], [1.4, 0.45, -0.9, 0.7]].map(([x, y, z, s]) => {
-    const c = new THREE.Group();
-    for (const [dx, dy, r] of [[0, 0, 0.22], [0.22, 0.05, 0.17], [-0.2, 0.02, 0.16], [0.08, 0.14, 0.15]]) {
-      const p = new THREE.Mesh(new THREE.SphereGeometry(r, 14, 10), cloudMat);
-      p.position.set(dx, dy, 0);
-      c.add(p);
-    }
-    c.position.set(x, y, z); c.scale.setScalar(s);
-    root.add(c);
-    return c;
-  });
+  const glow = new THREE.PointLight('#ffd27a', 0, 3);
+  glow.position.set(0, y0, 0.3);
+  root.add(glow);
 
+  // door, hinged on the left edge
+  const hinge = new THREE.Group();
+  hinge.position.set(-W / 2, y0, D / 2);
+  const door = new THREE.Mesh(new RoundedBoxGeometry(W - 0.04, H - 0.04, 0.12, 2, 0.04), std(PALETTE.accentHi, 0.45));
+  door.position.set(W / 2, 0, 0.06);
+  const plate = new THREE.Mesh(new RoundedBoxGeometry(W - 0.36, H - 0.36, 0.04, 2, 0.02), shell);
+  plate.position.set(W / 2, 0, 0.13);
+  hinge.add(door, plate);
+  for (const y of [-0.45, 0.45]) {
+    const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.26, 16), metal);
+    pin.position.set(0, y, 0.06);
+    hinge.add(pin);
+  }
+  // combination dial
+  const dial = new THREE.Group();
+  const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.32, 0.08, 48), metal);
+  disc.rotation.x = Math.PI / 2;
+  dialTex ||= canvasTex(256, 256, (g, w, h) => {
+    g.translate(w / 2, h / 2);
+    g.fillStyle = PALETTE.ink;
+    for (let i = 0; i < 40; i++) { g.save(); g.rotate((i / 40) * Math.PI * 2); g.fillRect(-2, -122, 4, i % 5 ? 12 : 24); g.restore(); }
+    g.font = `16px ${PX}`; g.textAlign = 'center'; g.textBaseline = 'middle';
+    for (let i = 0; i < 4; i++) { const a = (i * Math.PI) / 2; g.fillText(String(i * 10), Math.sin(a) * 78, -Math.cos(a) * 78); }
+  }, true);
+  const ticks = decal(dialTex, 0.6, 0.6);
+  ticks.position.z = 0.041;
+  const knob = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.12, 0.1, 24), dark);
+  knob.rotation.x = Math.PI / 2;
+  knob.position.z = 0.07;
+  dial.add(disc, ticks, knob);
+  dial.position.set(W / 2 - 0.1, 0.12, 0.19);
+  const mark = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.09, 3), metal);
+  mark.rotation.z = Math.PI;
+  mark.position.set(W / 2 - 0.1, 0.5, 0.17);
+  hinge.add(dial, mark);
+  // spoked handle
+  const wheel = new THREE.Group();
+  const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.1, 20), metal);
+  hub.rotation.x = Math.PI / 2;
+  wheel.add(hub);
+  for (let i = 0; i < 3; i++) {
+    const arm = new THREE.Group();
+    const spoke = new THREE.Mesh(new RoundedBoxGeometry(0.05, 0.2, 0.05, 2, 0.02), metal);
+    spoke.position.y = 0.1;
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.045, 14, 10), metal);
+    tip.position.y = 0.21;
+    arm.add(spoke, tip);
+    arm.rotation.z = (i / 3) * Math.PI * 2;
+    wheel.add(arm);
+  }
+  wheel.position.set(W / 2 + 0.36, -0.36, 0.2);
+  hinge.add(wheel);
+  // tiny status screen + lock LED
+  const lcd = decal(canvasTex(192, 48, (g, w, h) => {
+    g.fillStyle = PALETTE.ink; g.fillRect(0, 0, w, h);
+    g.fillStyle = PALETTE.green; g.font = `14px ${PX}`; g.fillText('AES-256', 14, 32);
+  }, true), 0.5, 0.125);
+  lcd.position.set(W / 2 - 0.3, -0.4, 0.152);
+  const led = new THREE.Mesh(new THREE.SphereGeometry(0.035, 10, 8), new THREE.MeshStandardMaterial({ color: PALETTE.red, emissive: PALETTE.red, emissiveIntensity: 2 }));
+  led.position.set(W / 2 + 0.02, -0.4, 0.16);
+  hinge.add(lcd, led);
+  root.add(hinge);
+
+  // it keeps punching in a combination; hover opens it, a tap spins the dial
+  let target = 0, next = 0, unlocked = false;
   root.userData.tick = (t, dt, v) => {
-    const k = v && v.hoverT > 0.5 ? 1.6 : 1;
-    plane.rotation.z = Math.sin(t * 0.9 * k) * 0.28;
-    plane.rotation.x = Math.sin(t * 0.6) * 0.08;
-    plane.position.y = Math.sin(t * 1.2) * 0.08;
-    clouds.forEach((c, i) => { c.position.z = ((t * 0.5 + i * 1.3) % 3) - 1.5; });
+    const open = v ? v.hoverT : 0;
+    hinge.rotation.y = damp(hinge.rotation.y, -open * 1.75, 7, dt);
+    wheel.rotation.z = damp(wheel.rotation.z, open * 2.1, 6, dt);
+    if (t > next) { target += (Math.random() < 0.5 ? -1 : 1) * (0.8 + Math.random() * 2.2); next = t + 0.9 + Math.random() * 0.6; }
+    dial.rotation.z = damp(dial.rotation.z, target, 6, dt);
+    glow.intensity = open * 2.5;
+    if (unlocked !== open > 0.5) {
+      unlocked = open > 0.5;
+      led.material.color.set(unlocked ? PALETTE.green : PALETTE.red);
+      led.material.emissive.set(unlocked ? PALETTE.green : PALETTE.red);
+    }
   };
-  root.rotation.y = -0.6;
+  root.userData.onTap = () => { target -= Math.PI * 4; };
+  root.rotation.y = -0.35;
   return centered(root);
 }

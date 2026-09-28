@@ -79,7 +79,7 @@
         <section class="page" data-page="work" aria-label="Projects">
           <div class="page-head">
             <h2 class="px">SELECT GAME</h2>
-            <p class="px sub">3 PROJECTS · 2025 — 2026</p>
+            <p class="px sub">3 PROJECTS · 2026</p>
           </div>
           <div class="game-grid" id="game-grid"></div>
         </section>
@@ -194,6 +194,23 @@
           </div>
         </section>
       </main>
+
+      <!-- SCREENSHOTS (projects without a public repo) -->
+      <div class="shots" id="shots" hidden role="dialog" aria-modal="true" aria-labelledby="shots-title">
+        <div class="shots-win">
+          <div class="shots-bar px">
+            <span id="shots-title">SCREENSHOTS</span>
+            <span class="shots-n" id="shots-n">01/02</span>
+            <button class="hud-btn px" id="shots-x" type="button">✕ CLOSE</button>
+          </div>
+          <a class="shots-frame" id="shots-full" href="#" target="_blank" rel="noopener" title="Open full size"><img id="shots-img" alt=""></a>
+          <div class="shots-foot">
+            <p class="px shots-cap" id="shots-cap"></p>
+            <button class="btn px" id="shots-prev" type="button">◀ PREV</button>
+            <button class="btn px" id="shots-next" type="button">NEXT ▶</button>
+          </div>
+        </div>
+      </div>
 
       <!-- bottom HUD -->
       <footer class="hud hud-bottom px">
